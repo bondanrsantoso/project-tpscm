@@ -48,7 +48,7 @@ class ItemController extends Controller
      */
     public function create()
     {
-        //
+        // TODO: Make an InertiaJS view in React for inserting (and updating) an Item
     }
 
     /**
@@ -56,7 +56,19 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $valid = $request->validate([
+            "name" => "required|string",
+            "description" => "required|string",
+            "image_url" => "required|string",
+            "weight" => "required|numberic|min:0",
+            "width" => "required|numeric|min:0",
+            "height" => "required|numeric|min:0",
+            "depth" => "required|numeric|min:0",
+            "value" => "required|numeric|min:0",
+        ]);
+        $newItem = Item::create($valid);
+
+        return to_route("items.index");
     }
 
     /**
@@ -72,7 +84,7 @@ class ItemController extends Controller
      */
     public function edit(Item $item)
     {
-        //
+        // TODO: Make an InertiaJS view in React for updating an Item
     }
 
     /**
@@ -80,7 +92,20 @@ class ItemController extends Controller
      */
     public function update(Request $request, Item $item)
     {
-        //
+        $valid = $request->validate([
+            "name" => "sometimes|required|string",
+            "description" => "sometimes|required|string",
+            "image_url" => "sometimes|required|string",
+            "weight" => "sometimes|required|numberic|min:0",
+            "width" => "sometimes|required|numeric|min:0",
+            "height" => "sometimes|required|numeric|min:0",
+            "depth" => "sometimes|required|numeric|min:0",
+            "value" => "sometimes|required|numeric|min:0",
+        ]);
+        $item->fill($valid);
+        $item->save();
+
+        return to_route("items.index");
     }
 
     /**

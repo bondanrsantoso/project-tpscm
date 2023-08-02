@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource("items", ItemController::class)->middleware(["upload:image,image_url"]);
+    Route::resource("products", ProductController::class)->middleware(["upload:image,image_url"]);
 });
 
 require __DIR__ . '/auth.php';

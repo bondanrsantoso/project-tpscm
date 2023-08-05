@@ -2,17 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GeneralIndexRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(GeneralIndexRequest $request)
     {
-        //
+        $productQuery = Product::select(["*"]);
+
+        if ($request->filled("search")) {
+            $productQuery->where(function ($q) use ($request) {
+                $q->where("name", "like", "%" . $request->input("search") . "%")
+                    ->orWhere("description", "like", "%" . $request->input("search") . "%");
+            });
+        }
+
+        [$sortColumn, $sortDirection] = explode(";", $request->input("order_by", "name;asc"));
+        $productQuery->orderBy($sortColumn, $sortDirection);
+
+        $products = $productQuery->paginate($request->input("paginate", 25));
+
+        // TODO: Add valid intertia view for product search/list
+        // return Inertia::render("Items/Index", [
+        //     "items" => $items,
+        //     "search" => $request->input("search", ""),
+        //     "order_by" => $request->input("order_by", "name;asc"),
+        //     "page" => $request->input("page", 1),
+        //     "paginate" => $request->input("paginate", 25),
+        // ]);
     }
 
     /**
@@ -20,7 +43,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        // TODO: inertia form view
     }
 
     /**
@@ -28,7 +51,24 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $valid = $request->validate([
+            "sku" => "required|string",
+            "brand" => "required|string",
+            "variants" => "required|string",
+            "description" => "required|string",
+            "image_url" => "required|string",
+            "net_weight" => "required|numeric|min:0",
+            "gross_weight" => "required|numeric|min:0",
+            "tare_weight" => "required|numeric|min:0",
+            "width" => "required|numeric|min:0",
+            "height" => "required|numeric|min:0",
+            "depth" => "required|numeric|min:0",
+            "base_value" => "required|numeric|min:0",
+        ]);
+
+        $product = Product::create($valid);
+
+        return to_route("products.index");
     }
 
     /**
@@ -36,7 +76,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        // TODO: product detail inertia view
     }
 
     /**
@@ -44,7 +84,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        // TODO: product edit inertia view (probably the same one as for crete())
     }
 
     /**
@@ -52,14 +92,38 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $valid = $request->validate([
+            "sku" => "sometimes|required|string",
+            "brand" => "sometimes|required|string",
+            "variants" => "sometimes|required|string",
+            "description" => "sometimes|required|string",
+            "image_url" => "sometimes|required|string",
+            "net_weight" => "sometimes|required|numeric|min:0",
+            "gross_weight" => "sometimes|required|numeric|min:0",
+            "tare_weight" => "sometimes|required|numeric|min:0",
+            "width" => "sometimes|required|numeric|min:0",
+            "height" => "sometimes|required|numeric|min:0",
+            "depth" => "sometimes|required|numeric|min:0",
+            "base_value" => "sometimes|required|numeric|min:0",
+        ]);
+
+        $product = $product->fill($valid);
+        $product->save();
+
+        return to_route("products.index");
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy(Request $request, Product $product)
     {
-        //
+        $product->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json(["message" => "OK"]);
+        }
+
+        return to_route("products.index");
     }
 }

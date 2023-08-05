@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StationController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -39,6 +40,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource("items", ItemController::class)->middleware(["upload:image,image_url"]);
     Route::resource("products", ProductController::class)->middleware(["upload:image,image_url"]);
+    Route::resource("stations", StationController::class)->middleware(["upload:image,image_url"]);
 });
 
 require __DIR__ . '/auth.php';

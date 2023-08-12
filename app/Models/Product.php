@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
@@ -22,6 +24,7 @@ class Product extends Model
         "height",
         "depth",
         "base_value",
+        "stock_unit",
     ];
 
     protected $casts = [
@@ -34,4 +37,26 @@ class Product extends Model
         "volume" => "float",
         "base_value" => "float",
     ];
+
+    public function stocks(): HasMany
+    {
+        return $this->hasMany(ProductStock::class, "product_id", "id");
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(ProductTransaction::class, "product_id", "id");
+    }
+
+    public function stations(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Station::class,
+            "product_stock",
+            "product_id",
+            "station_id",
+            "id",
+            "id"
+        )->withPivot(["amount"])->as("stock");
+    }
 }

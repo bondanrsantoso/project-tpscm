@@ -64,6 +64,7 @@ class ProductController extends Controller
             "height" => "required|numeric|min:0",
             "depth" => "required|numeric|min:0",
             "base_value" => "required|numeric|min:0",
+            "stock_unit" => "required|string",
         ]);
 
         $product = Product::create($valid);
@@ -105,6 +106,7 @@ class ProductController extends Controller
             "height" => "sometimes|required|numeric|min:0",
             "depth" => "sometimes|required|numeric|min:0",
             "base_value" => "sometimes|required|numeric|min:0",
+            "stock_unit" => "sometimes|required|string",
         ]);
 
         $product = $product->fill($valid);

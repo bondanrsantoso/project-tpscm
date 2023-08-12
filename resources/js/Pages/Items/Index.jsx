@@ -5,6 +5,10 @@ import TextInput from "@/Components/TextInput";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, useForm } from "@inertiajs/react";
 import { useEffect, useState } from "react";
+import { FaPlus, FaRegPenToSquare } from "react-icons/fa6";
+import Modal from '@/Components/Modal';
+import InputLabel from '@/Components/InputLabel';
+import TextArea from "@/Components/TextArea";
 
 function formatIDR(amount) {
     const formatter = new Intl.NumberFormat("id", {
@@ -31,9 +35,40 @@ function ItemsList({
     });
 
     const [needRefresh, setNeedRefresh] = useState(false);
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
+    const [itemForm, setFormItem] = useState({
+        name: null,
+        image_url: null,
+        width: null,
+        height: null,
+        weight: null,
+        depth: null,
+        value: null,
+        description: null
+    })
 
     function refresh() {
         get(route("items.index"));
+    }
+
+    const openAddModal = () => {
+        setShowAddModal(true)
+        setIsEdit(false)
+    }
+
+    const openEditModal = (item) => {
+        setFormItem(item)
+        setShowAddModal(true)
+        setIsEdit(true)
+
+        console.log('====================================');
+        console.log(item);
+        console.log('====================================');
+    }
+
+    const closeModal = () => {
+        setShowAddModal(false)
     }
 
     useEffect(() => {
@@ -60,7 +95,12 @@ function ItemsList({
         >
             <Head title="Items"></Head>
             <div className="max-w-7xl mx-auto py-10">
-                <h1 className="text-xl font-bold">Items List</h1>
+                <div className="flex flex-row justify-between">
+                    <h1 className="text-xl font-bold">Items List</h1>
+                     <PrimaryButton className="shrink-0 bg-blue-900 hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-950" onClick={openAddModal}>
+                        <FaPlus className="mr-2"/> Add Items
+                     </PrimaryButton>
+                </div>
                 <form
                     className="mt-4 flex justify-end items-center gap-2"
                     onSubmit={(e) => {
@@ -166,6 +206,7 @@ function ItemsList({
                             <th className="p-2 border">Weight</th>
                             <th className="p-2 border">Dimensions</th>
                             <th className="p-2 border">Value</th>
+                            <th className="p-2 border">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -186,6 +227,13 @@ function ItemsList({
                                 </td>
                                 <td className="p-2 border">
                                     {formatIDR(item.value)}
+                                </td>
+                                <td className="p-2 border">
+                                    <div className="flex justify-center">
+                                        <button onClick={()=>openEditModal(item)}>
+                                            <FaRegPenToSquare/>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}
@@ -243,6 +291,125 @@ function ItemsList({
                 </div>
 
                 {/* <pre>{JSON.stringify(items, null, 2)}</pre> */}
+                <Modal show={showAddModal} onClose={closeModal}>
+                    <form className="p-6">
+                        <h2 className="text-lg font-medium text-gray-900 mb-4">
+                            { isEdit ? 'Edit Item' : 'Add Item' }
+                        </h2>
+
+                        <div class="grid grid-cols-2 gap-3 gap-y-5">
+                            <div>
+                                <InputLabel htmlFor="name" value="Item Name" className="mb-1" />
+
+                                <TextInput
+                                    id="name"
+                                    type="text"
+                                    name="name"
+                                    className="w-full"
+                                    isFocused
+                                    placeholder="Item Name"
+                                    value={itemForm.name}
+                                />
+                            </div>
+                            <div>
+                                <InputLabel htmlFor="weight" value="Item Weight" className="mb-1" />
+
+                                <TextInput
+                                    id="weight"
+                                    type="number"
+                                    name="weight"
+                                    className="w-full"
+                                    isFocused
+                                    placeholder="Item Weight"
+                                    value={itemForm.weight}
+                                />
+                            </div>
+                            <div>
+                                <InputLabel htmlFor="width" value="Item Width" className="mb-1" />
+
+                                <TextInput
+                                    id="width"
+                                    type="number"
+                                    name="width"
+                                    className="w-full"
+                                    isFocused
+                                    placeholder="Item Width"
+                                    value={itemForm.width}
+                                />
+                            </div>
+                            <div>
+                                <InputLabel htmlFor="height" value="Item Height" className="mb-1" />
+
+                                <TextInput
+                                    id="height"
+                                    type="number"
+                                    name="height"
+                                    className="w-full"
+                                    isFocused
+                                    placeholder="Item Height"
+                                    value={itemForm.height}
+                                />
+                            </div>
+                            <div>
+                                <InputLabel htmlFor="depth" value="Item Depth" className="mb-1" />
+
+                                <TextInput
+                                    id="depth"
+                                    type="number"
+                                    name="depth"
+                                    className="w-full"
+                                    isFocused
+                                    placeholder="Item Depth"
+                                    value={itemForm.depth}
+                                />
+                            </div>
+                            <div>
+                                <InputLabel htmlFor="value" value="Item Value" className="mb-1" />
+
+                                <TextInput
+                                    id="value"
+                                    type="number"
+                                    name="value"
+                                    className="w-full"
+                                    isFocused
+                                    placeholder="Item Value"
+                                    value={itemForm.value}
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <InputLabel htmlFor="image" value="Image Url" className="mb-1" />
+
+                                <TextInput
+                                    id="image"
+                                    type="text"
+                                    name="image"
+                                    className="w-full"
+                                    isFocused
+                                    placeholder="Image Url"
+                                    value={itemForm.image_url}
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <InputLabel htmlFor="description" value="Description" className="mb-1" />
+
+                                <TextArea
+                                    id="description"
+                                    type="text"
+                                    name="description"
+                                    className="w-full"
+                                    isFocused
+                                    placeholder="Description"
+                                    value={itemForm.description}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="mt-6 flex justify-end">
+                            <SecondaryButton onClick={closeModal}>Cancel</SecondaryButton>
+                            <PrimaryButton className="ml-3" onClick={closeModal}>Save</PrimaryButton>
+                        </div>
+                    </form>
+                </Modal>
             </div>
         </AuthenticatedLayout>
     );

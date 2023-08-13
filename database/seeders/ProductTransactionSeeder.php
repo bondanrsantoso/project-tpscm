@@ -56,7 +56,7 @@ class ProductTransactionSeeder extends Seeder
                     "station_id" => $stationIds->random(),
                     "is_correction" => false,
                     "amount" => $insertedAmount,
-                    "unit" => "unit",
+                    // "unit" => "unit",
                 ];
 
                 if (isset($stocks[$productId . "-" . $stationId])) {

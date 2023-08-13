@@ -1,14 +1,14 @@
-import { twMerge } from "tailwind-merge";
+import { twMerge } from 'tailwind-merge'
 
-export default function Checkbox({ className = "", ...props }) {
-    return (
-        <input
-            {...props}
-            type="checkbox"
-            className={twMerge(
-                "rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500",
-                className
-            )}
-        />
-    );
+export default function Checkbox({ className = '', ...props }) {
+	return (
+		<input
+			{...props}
+			type="checkbox"
+			className={twMerge(
+				'rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500',
+				className
+			)}
+		/>
+	)
 }

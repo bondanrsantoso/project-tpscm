@@ -18,7 +18,7 @@ function formatIDR(amount) {
 	return formatter.format(amount)
 }
 
-function ItemsList({
+function ProductsList({
 	items,
 	auth,
 	search,
@@ -37,19 +37,24 @@ function ItemsList({
 	const [needRefresh, setNeedRefresh] = useState(false)
 	const [showAddModal, setShowAddModal] = useState(false)
 	const [isEdit, setIsEdit] = useState(false)
-	const [itemForm, setFormItem] = useState({
-		name: null,
+	const { data: itemForm, setData: setFormItem, post, processing } = useForm({
+		sku: null,
+		brand: null,
+		variants: null,
+		description: null,
 		image_url: null,
+		net_weight: null,
+		gross_weight: null,
+		tare_weight: null,
 		width: null,
 		height: null,
-		weight: null,
 		depth: null,
-		value: null,
-		description: null
+		base_value: null,
+		stock_unit: null
 	})
 
 	function refresh() {
-		get(route('items.index'))
+		get(route('products.index'))
 	}
 
 	const openAddModal = () => {
@@ -71,6 +76,29 @@ function ItemsList({
 		setShowAddModal(false)
 	}
 
+	const handleSave = (e) => {
+		if(isEdit){
+			editProduct(e)
+		} else {
+			addProduct(e)
+		}
+	}
+
+	const addProduct = (e) => {
+		e.preventDefault()
+		post(route('products.store'), {
+			forceFormData: true,
+			onSuccess: () => {
+				closeModal()
+				get(route('products.index'))
+			}
+		})
+	}
+
+	const editProduct = (e) => {
+		// Edit
+	}
+
 	useEffect(() => {
 		if (data.order_by !== order_by || data.paginate !== paginate) {
 			if (page !== 1) {
@@ -90,15 +118,15 @@ function ItemsList({
 
 	return (
 		<AuthenticatedLayout
-			header={<h2 className="text-lg font-bold">Items</h2>}
+			header={<h2 className="text-lg font-bold">Products</h2>}
 			user={auth.user}
 		>
 			<Head title="Items"></Head>
 			<div className="max-w-7xl mx-auto py-10">
 				<div className="flex flex-row justify-between">
-					<h1 className="text-xl font-bold">Items List</h1>
+					<h1 className="text-xl font-bold">Products List</h1>
 					<PrimaryButton className="shrink-0 bg-blue-900 hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-950" onClick={openAddModal}>
-						<FaPlus className="mr-2"/> Add Items
+						<FaPlus className="mr-2"/> Add Product
 					</PrimaryButton>
 				</div>
 				<form
@@ -144,7 +172,7 @@ function ItemsList({
 						/>
 					</div>
 					<PrimaryButton type="submit" className="shrink-0">
-                        Search Items
+                        Search Products
 					</PrimaryButton>
 				</form>
 
@@ -201,17 +229,22 @@ function ItemsList({
 				<table className="table-auto mt-2 w-full">
 					<thead>
 						<tr>
+							<th className="p-2 border">SKU</th>
 							<th className="p-2 border">Image</th>
 							<th className="p-2 border">Name</th>
-							<th className="p-2 border">Weight</th>
+							<th className="p-2 border">Brand</th>
+							<th className="p-2 border">Variants</th>
 							<th className="p-2 border">Dimensions</th>
+							<th className="p-2 border">Weight</th>
 							<th className="p-2 border">Value</th>
+							<th className="p-2 border">Stock Unit</th>
 							<th className="p-2 border">Actions</th>
 						</tr>
 					</thead>
 					<tbody>
 						{items.data.map((item) => (
 							<tr key={item.id}>
+								<td className="p-2 border">{item.sku}</td>
 								<td className="p-2 border">
 									<img
 										src={item.image_url}
@@ -220,14 +253,23 @@ function ItemsList({
 									/>
 								</td>
 								<td className="p-2 border">{item.name}</td>
-								<td className="p-2 border">{item.weight} kg</td>
+								<td className="p-2 border">{item.brand}</td>
+								<td className="p-2 border">{item.variants}</td>
 								<td className="p-2 border">
 									{item.width}cm &times; {item.height}cm
                                     &times; {item.depth}cm
 								</td>
 								<td className="p-2 border">
-									{formatIDR(item.value)}
+									<div className='flex flex-col'>
+										<p>Nett: {item.net_weight} kg</p>
+										<p>Gross: {item.gross_weight} kg</p>
+										<p>Tare: {item.tare_weight} kg</p>
+									</div>
 								</td>
+								<td className="p-2 border">
+									{formatIDR(item.base_value)}
+								</td>
+								<td className="p-2 border">{item.stock_unit}</td>
 								<td className="p-2 border">
 									<div className="flex justify-center">
 										<button onClick={()=>openEditModal(item)}>
@@ -292,14 +334,28 @@ function ItemsList({
 
 				{/* <pre>{JSON.stringify(items, null, 2)}</pre> */}
 				<Modal show={showAddModal} onClose={closeModal}>
-					<form className="p-6">
+					<form className="p-6" onSubmit={handleSave}>
 						<h2 className="text-lg font-medium text-gray-900 mb-4">
 							{ isEdit ? 'Edit Item' : 'Add Item' }
 						</h2>
 
 						<div className="grid grid-cols-2 gap-3 gap-y-5">
 							<div>
-								<InputLabel htmlFor="name" value="Item Name" className="mb-1" />
+								<InputLabel htmlFor="sku" value="SKU" className="mb-1" />
+
+								<TextInput
+									id="sku"
+									type="text"
+									name="sku"
+									className="w-full"
+									isFocused
+									placeholder="SKU"
+									value={itemForm.sku}
+									onChange={e=>setFormItem('sku', e.target.value)}
+								/>
+							</div>
+							<div>
+								<InputLabel htmlFor="name" value="Product Name" className="mb-1" />
 
 								<TextInput
 									id="name"
@@ -309,62 +365,39 @@ function ItemsList({
 									isFocused
 									placeholder="Item Name"
 									value={itemForm.name}
+									onChange={e=>setFormItem('name', e.target.value)}
 								/>
 							</div>
 							<div>
-								<InputLabel htmlFor="weight" value="Item Weight" className="mb-1" />
+								<InputLabel htmlFor="brand" value="Brand" className="mb-1" />
 
 								<TextInput
-									id="weight"
-									type="number"
-									name="weight"
+									id="brand"
+									type="text"
+									name="brand"
 									className="w-full"
 									isFocused
-									placeholder="Item Weight"
-									value={itemForm.weight}
+									placeholder="Brand"
+									value={itemForm.brand}
+									onChange={e=>setFormItem('brand', e.target.value)}
 								/>
 							</div>
 							<div>
-								<InputLabel htmlFor="width" value="Item Width" className="mb-1" />
+								<InputLabel htmlFor="variant" value="Variant" className="mb-1" />
 
 								<TextInput
-									id="width"
-									type="number"
-									name="width"
+									id="variant"
+									type="text"
+									name="variant"
 									className="w-full"
 									isFocused
-									placeholder="Item Width"
-									value={itemForm.width}
+									placeholder="Variant"
+									value={itemForm.variants}
+									onChange={e=>setFormItem('variants', e.target.value)}
 								/>
 							</div>
 							<div>
-								<InputLabel htmlFor="height" value="Item Height" className="mb-1" />
-
-								<TextInput
-									id="height"
-									type="number"
-									name="height"
-									className="w-full"
-									isFocused
-									placeholder="Item Height"
-									value={itemForm.height}
-								/>
-							</div>
-							<div>
-								<InputLabel htmlFor="depth" value="Item Depth" className="mb-1" />
-
-								<TextInput
-									id="depth"
-									type="number"
-									name="depth"
-									className="w-full"
-									isFocused
-									placeholder="Item Depth"
-									value={itemForm.depth}
-								/>
-							</div>
-							<div>
-								<InputLabel htmlFor="value" value="Item Value" className="mb-1" />
+								<InputLabel htmlFor="value" value="Value" className="mb-1" />
 
 								<TextInput
 									id="value"
@@ -372,21 +405,105 @@ function ItemsList({
 									name="value"
 									className="w-full"
 									isFocused
-									placeholder="Item Value"
-									value={itemForm.value}
+									placeholder="Value"
+									value={itemForm.base_value}
+									onChange={e=>setFormItem('base_value', e.target.value)}
 								/>
+							</div>
+							<div>
+								<InputLabel htmlFor="stock_unit" value="Stock Unit" className="mb-1" />
+
+								<TextInput
+									id="stock_unit"
+									type="text"
+									name="stock_unit"
+									className="w-full"
+									isFocused
+									placeholder="Stock Unit"
+									value={itemForm.stock_unit}
+									onChange={e=>setFormItem('stock_unit', e.target.value)}
+								/>
+							</div>
+							<div className="col-span-2">
+								<InputLabel htmlFor="weight" value="Weight" className="mb-1" />
+
+								<div
+									id="weight"
+									name="weight"
+									className="flex flex-row gap-2"
+								>
+									<TextInput
+										type="number"
+										className="w-full"
+										isFocused
+										placeholder="Nett Weight"
+										value={itemForm.net_weight}
+										onChange={e=>setFormItem('net_weight', e.target.value)}
+									/>
+									<TextInput
+										type="number"
+										className="w-full"
+										isFocused
+										placeholder="Gross Weight"
+										value={itemForm.gross_weight}
+										onChange={e=>setFormItem('gross_weight', e.target.value)}
+									/>
+									<TextInput
+										type="number"
+										className="w-full"
+										isFocused
+										placeholder="Tare Weight"
+										value={itemForm.tare_weight}
+										onChange={e=>setFormItem('tare_weight', e.target.value)}
+									/>
+								</div>
+							</div>
+							<div className="col-span-2">
+								<InputLabel htmlFor="dimensions" value="Dimensions" className="mb-1" />
+
+								<div
+									id="dimensions"
+									name="dimensions"
+									className="flex flex-row gap-2"
+								>
+									<TextInput
+										type="number"
+										className="w-full"
+										isFocused
+										placeholder="Width"
+										value={itemForm.width}
+										onChange={e=>setFormItem('width', e.target.value)}
+									/>
+									<TextInput
+										type="number"
+										className="w-full"
+										isFocused
+										placeholder="Height"
+										value={itemForm.height}
+										onChange={e=>setFormItem('height', e.target.value)}
+									/>
+									<TextInput
+										type="number"
+										className="w-full"
+										isFocused
+										placeholder="Depth"
+										value={itemForm.depth}
+										onChange={e=>setFormItem('depth', e.target.value)}
+									/>
+								</div>
 							</div>
 							<div className="col-span-2">
 								<InputLabel htmlFor="image" value="Image Url" className="mb-1" />
 
 								<TextInput
 									id="image"
-									type="text"
+									type="file"
+									accept="image/png, image/gif, image/jpeg"
 									name="image"
 									className="w-full"
 									isFocused
 									placeholder="Image Url"
-									value={itemForm.image_url}
+									onChange={e=>setFormItem('image_url', e.target.files[0])}
 								/>
 							</div>
 							<div className="col-span-2">
@@ -400,13 +517,14 @@ function ItemsList({
 									isFocused
 									placeholder="Description"
 									value={itemForm.description}
+									onChange={e=>setFormItem('description', e.target.value)}
 								/>
 							</div>
 						</div>
 
 						<div className="mt-6 flex justify-end">
 							<SecondaryButton onClick={closeModal}>Cancel</SecondaryButton>
-							<PrimaryButton className="ml-3" onClick={closeModal}>Save</PrimaryButton>
+							<PrimaryButton className="ml-3" type="submit" disabled={processing}>Save</PrimaryButton>
 						</div>
 					</form>
 				</Modal>
@@ -415,4 +533,4 @@ function ItemsList({
 	)
 }
 
-export default ItemsList
+export default ProductsList

@@ -28,14 +28,14 @@ class ProductController extends Controller
 
         $products = $productQuery->paginate($request->input("paginate", 25));
 
-        // TODO: Add valid intertia view for product search/list
-        // return Inertia::render("Items/Index", [
-        //     "items" => $items,
-        //     "search" => $request->input("search", ""),
-        //     "order_by" => $request->input("order_by", "name;asc"),
-        //     "page" => $request->input("page", 1),
-        //     "paginate" => $request->input("paginate", 25),
-        // ]);
+        // DOING: Add valid intertia view for product search/list
+        return Inertia::render("Products/Index", [
+            "items" => $products,
+            "search" => $request->input("search", ""),
+            "order_by" => $request->input("order_by", "name;asc"),
+            "page" => $request->input("page", 1),
+            "paginate" => $request->input("paginate", 25),
+        ]);
     }
 
     /**

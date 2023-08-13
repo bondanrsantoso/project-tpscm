@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useRef } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 export default forwardRef(function TextInput(
-	{ className = '', isFocused = false, children, ...props },
+	{ type = 'text', className = '', isFocused = false, ...props },
 	ref
 ) {
 	const input = ref ? ref : useRef()
@@ -14,15 +14,14 @@ export default forwardRef(function TextInput(
 	}, [])
 
 	return (
-		<select
+		<textarea
 			{...props}
+			type={type}
 			className={twMerge(
 				'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm',
 				className
 			)}
 			ref={input}
-		>
-			{children}
-		</select>
+		/>
 	)
 })

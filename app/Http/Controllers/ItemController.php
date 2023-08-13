@@ -48,7 +48,7 @@ class ItemController extends Controller
      */
     public function create()
     {
-        // TODO: Make an InertiaJS view in React for inserting (and updating) an Item
+        // DOING: Make an InertiaJS view in React for inserting (and updating) an Item
     }
 
     /**

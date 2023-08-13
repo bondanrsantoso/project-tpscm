@@ -37,12 +37,12 @@ function ProductsList({
 	const [needRefresh, setNeedRefresh] = useState(false)
 	const [showAddModal, setShowAddModal] = useState(false)
 	const [isEdit, setIsEdit] = useState(false)
-	const { data: itemForm, setData: setFormItem, post, processing } = useForm({
+	const { data: itemForm, setData: setFormItem, post, patch, put, processing } = useForm({
 		sku: null,
 		brand: null,
 		variants: null,
 		description: null,
-		image_url: null,
+		image: null,
 		net_weight: null,
 		gross_weight: null,
 		tare_weight: null,
@@ -63,13 +63,10 @@ function ProductsList({
 	}
 
 	const openEditModal = (item) => {
+		delete item['image_url']
 		setFormItem(item)
 		setShowAddModal(true)
 		setIsEdit(true)
-
-		console.log('====================================')
-		console.log(item)
-		console.log('====================================')
 	}
 
 	const closeModal = () => {
@@ -96,7 +93,14 @@ function ProductsList({
 	}
 
 	const editProduct = (e) => {
-		// Edit
+		e.preventDefault()
+		patch(`/products/${itemForm.id}`, {
+			forceFormData: true,
+			onSuccess: () => {
+				closeModal()
+				get(route('products.index'))
+			}
+		})
 	}
 
 	useEffect(() => {
@@ -115,6 +119,10 @@ function ProductsList({
 			refresh()
 		}
 	}, [data.page])
+
+	useEffect(() => {
+		setFormItem('gross_weight', parseFloat(itemForm.net_weight) + parseFloat(itemForm.tare_weight))
+	}, [itemForm.net_weight, itemForm.tare_weight])
 
 	return (
 		<AuthenticatedLayout
@@ -153,10 +161,10 @@ function ProductsList({
 						<option value="name;desc">Name Z-A</option>
 						<option value="updated_at;desc">Latest</option>
 						<option value="updated_at;asc">Oldest</option>
-						<option value="weight;asc">
+						<option value="gross_weight;asc">
                             Weight: Lightest first
 						</option>
-						<option value="weight;desc">
+						<option value="gross_weight;desc">
                             Weight: Heaviest first
 						</option>
 					</Select>
@@ -256,14 +264,14 @@ function ProductsList({
 								<td className="p-2 border">{item.brand}</td>
 								<td className="p-2 border">{item.variants}</td>
 								<td className="p-2 border">
-									{item.width}cm &times; {item.height}cm
-                                    &times; {item.depth}cm
+									{item.width}mm &times; {item.height}mm
+                                    &times; {item.depth}mm
 								</td>
 								<td className="p-2 border">
 									<div className='flex flex-col'>
-										<p>Nett: {item.net_weight} kg</p>
-										<p>Gross: {item.gross_weight} kg</p>
-										<p>Tare: {item.tare_weight} kg</p>
+										<p>Gross: {item.gross_weight} gr</p>
+										<p>Nett: {item.net_weight} gr</p>
+										<p>Tare: {item.tare_weight} gr</p>
 									</div>
 								</td>
 								<td className="p-2 border">
@@ -340,7 +348,7 @@ function ProductsList({
 						</h2>
 
 						<div className="grid grid-cols-2 gap-3 gap-y-5">
-							<div>
+							<div className='col-span-2'>
 								<InputLabel htmlFor="sku" value="SKU" className="mb-1" />
 
 								<TextInput
@@ -352,20 +360,6 @@ function ProductsList({
 									placeholder="SKU"
 									value={itemForm.sku}
 									onChange={e=>setFormItem('sku', e.target.value)}
-								/>
-							</div>
-							<div>
-								<InputLabel htmlFor="name" value="Product Name" className="mb-1" />
-
-								<TextInput
-									id="name"
-									type="text"
-									name="name"
-									className="w-full"
-									isFocused
-									placeholder="Item Name"
-									value={itemForm.name}
-									onChange={e=>setFormItem('name', e.target.value)}
 								/>
 							</div>
 							<div>
@@ -425,7 +419,7 @@ function ProductsList({
 								/>
 							</div>
 							<div className="col-span-2">
-								<InputLabel htmlFor="weight" value="Weight" className="mb-1" />
+								<InputLabel htmlFor="weight" value="Weight (gr)" className="mb-1" />
 
 								<div
 									id="weight"
@@ -444,22 +438,22 @@ function ProductsList({
 										type="number"
 										className="w-full"
 										isFocused
-										placeholder="Gross Weight"
-										value={itemForm.gross_weight}
-										onChange={e=>setFormItem('gross_weight', e.target.value)}
+										placeholder="Tare Weight"
+										value={itemForm.tare_weight}
+										onChange={e=>setFormItem('tare_weight', e.target.value)}
 									/>
 									<TextInput
 										type="number"
 										className="w-full"
 										isFocused
-										placeholder="Tare Weight"
-										value={itemForm.tare_weight}
-										onChange={e=>setFormItem('tare_weight', e.target.value)}
+										placeholder="Gross Weight"
+										value={itemForm.gross_weight}
+										disabled
 									/>
 								</div>
 							</div>
 							<div className="col-span-2">
-								<InputLabel htmlFor="dimensions" value="Dimensions" className="mb-1" />
+								<InputLabel htmlFor="dimensions" value="Dimensions (mm)" className="mb-1" />
 
 								<div
 									id="dimensions"
@@ -503,7 +497,7 @@ function ProductsList({
 									className="w-full"
 									isFocused
 									placeholder="Image Url"
-									onChange={e=>setFormItem('image_url', e.target.files[0])}
+									onChange={e=>setFormItem('image', e.target.files[0])}
 								/>
 							</div>
 							<div className="col-span-2">

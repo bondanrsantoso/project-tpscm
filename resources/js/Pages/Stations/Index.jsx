@@ -41,7 +41,7 @@ function StationsList({
 		name: null,
 		description: null,
 		address: null,
-		type: null,
+		type: 'warehouse',
 		lat: null,
 		lng: null,
 	})
@@ -75,7 +75,6 @@ function StationsList({
 	}
 
 	const addProduct = (e) => {
-		e.preventDefault()
 		post(route('stations.store'), {
 			forceFormData: true,
 			onSuccess: () => {
@@ -111,10 +110,6 @@ function StationsList({
 			refresh()
 		}
 	}, [data.page])
-
-	// useEffect(() => {
-	// 	setFormItem('gross_weight', parseFloat(itemForm.net_weight) + parseFloat(itemForm.tare_weight))
-	// }, [itemForm.net_weight, itemForm.tare_weight])
 
 	return (
 		<AuthenticatedLayout
@@ -153,11 +148,11 @@ function StationsList({
 						<option value="name;desc">Name Z-A</option>
 						<option value="updated_at;desc">Latest</option>
 						<option value="updated_at;asc">Oldest</option>
-						<option value="gross_weight;asc">
-                            Weight: Lightest first
+						<option value="type;asc">
+                            Type ASC
 						</option>
-						<option value="gross_weight;desc">
-                            Weight: Heaviest first
+						<option value="type;desc">
+							Type DESC
 						</option>
 					</Select>
 					<div className="border rounded-md flex flex-row items-baseline w-full bg-white">

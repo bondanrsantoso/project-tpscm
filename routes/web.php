@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\MaterialStockController;
+use App\Http\Controllers\MaterialTransactionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductStockController;
 use App\Http\Controllers\ProductTransactionController;
@@ -42,9 +45,15 @@ Route::middleware('auth')->group(function () {
 
     Route::resource("items", ItemController::class)->middleware(["upload:image,image_url"]);
     Route::resource("products", ProductController::class)->middleware(["upload:image,image_url"]);
+    Route::resource("materials", MaterialController::class)->middleware(["upload:image,image_url"]);
     Route::resource("stations", StationController::class)->middleware(["upload:image,image_url"]);
+
     Route::resource("product_transactions", ProductTransactionController::class);
     Route::resource("product_stock", ProductStockController::class)
+        ->except(["update", "destroy"]);
+
+    Route::resource("material_transactions", MaterialTransactionController::class);
+    Route::resource("material_stock", MaterialStockController::class)
         ->except(["update", "destroy"]);
 });
 

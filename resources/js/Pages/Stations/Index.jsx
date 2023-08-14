@@ -18,7 +18,7 @@ function formatIDR(amount) {
 	return formatter.format(amount)
 }
 
-function ProductsList({
+function StationsList({
 	items,
 	auth,
 	search,
@@ -38,23 +38,16 @@ function ProductsList({
 	const [showAddModal, setShowAddModal] = useState(false)
 	const [isEdit, setIsEdit] = useState(false)
 	const { data: itemForm, setData: setFormItem, post, patch, put, processing } = useForm({
-		sku: null,
-		brand: null,
-		variants: null,
+		name: null,
 		description: null,
-		image: null,
-		net_weight: null,
-		gross_weight: null,
-		tare_weight: null,
-		width: null,
-		height: null,
-		depth: null,
-		base_value: null,
-		stock_unit: null
+		address: null,
+		type: null,
+		lat: null,
+		lng: null,
 	})
 
 	function refresh() {
-		get(route('products.index'))
+		get(route('stations.index'))
 	}
 
 	const openAddModal = () => {
@@ -83,21 +76,21 @@ function ProductsList({
 
 	const addProduct = (e) => {
 		e.preventDefault()
-		post(route('products.store'), {
+		post(route('stations.store'), {
 			forceFormData: true,
 			onSuccess: () => {
 				closeModal()
-				get(route('products.index'))
+				get(route('stations.index'))
 			}
 		})
 	}
 
 	const editProduct = (e) => {
 		e.preventDefault()
-		patch(`/products/${itemForm.id}`, {
+		patch(`/stations/${itemForm.id}`, {
 			onSuccess: () => {
 				closeModal()
-				get(route('products.index'))
+				get(route('stations.index'))
 			}
 		})
 	}
@@ -119,21 +112,21 @@ function ProductsList({
 		}
 	}, [data.page])
 
-	useEffect(() => {
-		setFormItem('gross_weight', parseFloat(itemForm.net_weight) + parseFloat(itemForm.tare_weight))
-	}, [itemForm.net_weight, itemForm.tare_weight])
+	// useEffect(() => {
+	// 	setFormItem('gross_weight', parseFloat(itemForm.net_weight) + parseFloat(itemForm.tare_weight))
+	// }, [itemForm.net_weight, itemForm.tare_weight])
 
 	return (
 		<AuthenticatedLayout
-			header={<h2 className="text-lg font-bold">Products</h2>}
+			header={<h2 className="text-lg font-bold">Stations</h2>}
 			user={auth.user}
 		>
 			<Head title="Items"></Head>
 			<div className="max-w-7xl mx-auto py-10">
 				<div className="flex flex-row justify-between">
-					<h1 className="text-xl font-bold">Products List</h1>
+					<h1 className="text-xl font-bold">Stations List</h1>
 					<PrimaryButton className="shrink-0 bg-blue-900 hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-950" onClick={openAddModal}>
-						<FaPlus className="mr-2"/> Add Product
+						<FaPlus className="mr-2"/> Add Stations
 					</PrimaryButton>
 				</div>
 				<form
@@ -179,7 +172,7 @@ function ProductsList({
 						/>
 					</div>
 					<PrimaryButton type="submit" className="shrink-0">
-                        Search Products
+                        Search Stations
 					</PrimaryButton>
 				</form>
 
@@ -236,47 +229,24 @@ function ProductsList({
 				<table className="table-auto mt-2 w-full">
 					<thead>
 						<tr>
-							<th className="p-2 border">SKU</th>
-							<th className="p-2 border">Image</th>
 							<th className="p-2 border">Name</th>
-							<th className="p-2 border">Brand</th>
-							<th className="p-2 border">Variants</th>
-							<th className="p-2 border">Dimensions</th>
-							<th className="p-2 border">Weight</th>
-							<th className="p-2 border">Value</th>
-							<th className="p-2 border">Stock Unit</th>
+							<th className="p-2 border">Description</th>
+							<th className="p-2 border">Address</th>
+							<th className="p-2 border">Type</th>
+							<th className="p-2 border">Lat</th>
+							<th className="p-2 border">Long</th>
 							<th className="p-2 border">Actions</th>
 						</tr>
 					</thead>
 					<tbody>
 						{items.data.map((item) => (
 							<tr key={item.id}>
-								<td className="p-2 border">{item.sku}</td>
-								<td className="p-2 border">
-									<img
-										src={item.image_url}
-										alt={item.name}
-										className="w-20 max-h-20 mx-auto"
-									/>
-								</td>
-								<td className="p-2 border"><Link href={`/products/${item.id}`}>{item.name}</Link></td>
-								<td className="p-2 border">{item.brand}</td>
-								<td className="p-2 border">{item.variants}</td>
-								<td className="p-2 border">
-									{item.width}mm &times; {item.height}mm
-                                    &times; {item.depth}mm
-								</td>
-								<td className="p-2 border">
-									<div className='flex flex-col'>
-										<p>Gross: {item.gross_weight} gr</p>
-										<p>Nett: {item.net_weight} gr</p>
-										<p>Tare: {item.tare_weight} gr</p>
-									</div>
-								</td>
-								<td className="p-2 border">
-									{formatIDR(item.base_value)}
-								</td>
-								<td className="p-2 border">{item.stock_unit}</td>
+								<td className="p-2 border">{item.name}</td>
+								<td className="p-2 border">{item.description}</td>
+								<td className="p-2 border">{item.address}</td>
+								<td className="p-2 border">{item.type}</td>
+								<td className="p-2 border">{item.lat.toString()}</td>
+								<td className="p-2 border">{item.lng.toString()}</td>
 								<td className="p-2 border">
 									<div className="flex justify-center">
 										<button onClick={()=>openEditModal(item)}>
@@ -343,161 +313,37 @@ function ProductsList({
 				<Modal show={showAddModal} onClose={closeModal}>
 					<form className="p-6" onSubmit={handleSave}>
 						<h2 className="text-lg font-medium text-gray-900 mb-4">
-							{ isEdit ? 'Edit Item' : 'Add Item' }
+							{ isEdit ? 'Edit Stations' : 'Add Stations' }
 						</h2>
 
 						<div className="grid grid-cols-2 gap-3 gap-y-5">
-							<div className='col-span-2'>
-								<InputLabel htmlFor="sku" value="SKU" className="mb-1" />
+							<div>
+								<InputLabel htmlFor="name" value="Name" className="mb-1" />
 
 								<TextInput
-									id="sku"
+									id="name"
 									type="text"
-									name="sku"
+									name="name"
 									className="w-full"
 									isFocused
-									placeholder="SKU"
-									value={itemForm.sku}
-									onChange={e=>setFormItem('sku', e.target.value)}
+									placeholder="Name"
+									value={itemForm.name}
+									onChange={e=>setFormItem('name', e.target.value)}
 								/>
 							</div>
 							<div>
-								<InputLabel htmlFor="brand" value="Brand" className="mb-1" />
+								<InputLabel htmlFor="type" value="Type" className="mb-1" />
 
-								<TextInput
-									id="brand"
-									type="text"
-									name="brand"
+								<Select
 									className="w-full"
-									isFocused
-									placeholder="Brand"
-									value={itemForm.brand}
-									onChange={e=>setFormItem('brand', e.target.value)}
-								/>
-							</div>
-							<div>
-								<InputLabel htmlFor="variant" value="Variant" className="mb-1" />
-
-								<TextInput
-									id="variant"
-									type="text"
-									name="variant"
-									className="w-full"
-									isFocused
-									placeholder="Variant"
-									value={itemForm.variants}
-									onChange={e=>setFormItem('variants', e.target.value)}
-								/>
-							</div>
-							<div>
-								<InputLabel htmlFor="value" value="Value" className="mb-1" />
-
-								<TextInput
-									id="value"
-									type="number"
-									name="value"
-									className="w-full"
-									isFocused
-									placeholder="Value"
-									value={itemForm.base_value}
-									onChange={e=>setFormItem('base_value', e.target.value)}
-								/>
-							</div>
-							<div>
-								<InputLabel htmlFor="stock_unit" value="Stock Unit" className="mb-1" />
-
-								<TextInput
-									id="stock_unit"
-									type="text"
-									name="stock_unit"
-									className="w-full"
-									isFocused
-									placeholder="Stock Unit"
-									value={itemForm.stock_unit}
-									onChange={e=>setFormItem('stock_unit', e.target.value)}
-								/>
-							</div>
-							<div className="col-span-2">
-								<InputLabel htmlFor="weight" value="Weight (gr)" className="mb-1" />
-
-								<div
-									id="weight"
-									name="weight"
-									className="flex flex-row gap-2"
+									value={itemForm.type}
+									onChange={(e) => {
+										setFormItem('type', e.target.value)
+									}}
 								>
-									<TextInput
-										type="number"
-										className="w-full"
-										isFocused
-										placeholder="Nett Weight"
-										value={itemForm.net_weight}
-										onChange={e=>setFormItem('net_weight', e.target.value)}
-									/>
-									<TextInput
-										type="number"
-										className="w-full"
-										isFocused
-										placeholder="Tare Weight"
-										value={itemForm.tare_weight}
-										onChange={e=>setFormItem('tare_weight', e.target.value)}
-									/>
-									<TextInput
-										type="number"
-										className="w-full"
-										isFocused
-										placeholder="Gross Weight"
-										value={itemForm.gross_weight}
-										disabled
-									/>
-								</div>
-							</div>
-							<div className="col-span-2">
-								<InputLabel htmlFor="dimensions" value="Dimensions (mm)" className="mb-1" />
-
-								<div
-									id="dimensions"
-									name="dimensions"
-									className="flex flex-row gap-2"
-								>
-									<TextInput
-										type="number"
-										className="w-full"
-										isFocused
-										placeholder="Width"
-										value={itemForm.width}
-										onChange={e=>setFormItem('width', e.target.value)}
-									/>
-									<TextInput
-										type="number"
-										className="w-full"
-										isFocused
-										placeholder="Height"
-										value={itemForm.height}
-										onChange={e=>setFormItem('height', e.target.value)}
-									/>
-									<TextInput
-										type="number"
-										className="w-full"
-										isFocused
-										placeholder="Depth"
-										value={itemForm.depth}
-										onChange={e=>setFormItem('depth', e.target.value)}
-									/>
-								</div>
-							</div>
-							<div className="col-span-2">
-								<InputLabel htmlFor="image" value="Image Url" className="mb-1" />
-
-								<TextInput
-									id="image"
-									type="file"
-									accept="image/png, image/gif, image/jpeg"
-									name="image"
-									className="w-full"
-									isFocused
-									placeholder="Image Url"
-									onChange={e=>setFormItem('image', e.target.files[0])}
-								/>
+									<option value="warehouse">Warehouse</option>
+									<option value="plant">Plant</option>
+								</Select>
 							</div>
 							<div className="col-span-2">
 								<InputLabel htmlFor="description" value="Description" className="mb-1" />
@@ -513,6 +359,48 @@ function ProductsList({
 									onChange={e=>setFormItem('description', e.target.value)}
 								/>
 							</div>
+							<div className="col-span-2">
+								<InputLabel htmlFor="address" value="Address" className="mb-1" />
+
+								<TextArea
+									id="address"
+									type="text"
+									name="address"
+									className="w-full"
+									isFocused
+									placeholder="Address"
+									value={itemForm.address}
+									onChange={e=>setFormItem('address', e.target.value)}
+								/>
+							</div>
+							<div>
+								<InputLabel htmlFor="lat" value="Lat" className="mb-1" />
+
+								<TextInput
+									id="lat"
+									type="text"
+									name="lat"
+									className="w-full"
+									isFocused
+									placeholder="Lat"
+									value={itemForm.lat}
+									onChange={e=>setFormItem('lat', e.target.value)}
+								/>
+							</div>
+							<div>
+								<InputLabel htmlFor="long" value="Long" className="mb-1" />
+
+								<TextInput
+									id="long"
+									type="text"
+									name="long"
+									className="w-full"
+									isFocused
+									placeholder="Long"
+									value={itemForm.lng}
+									onChange={e=>setFormItem('lng', e.target.value)}
+								/>
+							</div>
 						</div>
 
 						<div className="mt-6 flex justify-end">
@@ -526,4 +414,4 @@ function ProductsList({
 	)
 }
 
-export default ProductsList
+export default StationsList

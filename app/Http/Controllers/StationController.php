@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Station;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class StationController extends Controller
 {
@@ -28,13 +29,13 @@ class StationController extends Controller
         $stations = $stationQuery->paginate($request->input("paginate", 25));
 
         // TODO: Add valid intertia view for product search/list
-        // return Inertia::render("Items/Index", [
-        //     "items" => $items,
-        //     "search" => $request->input("search", ""),
-        //     "order_by" => $request->input("order_by", "name;asc"),
-        //     "page" => $request->input("page", 1),
-        //     "paginate" => $request->input("paginate", 25),
-        // ]);
+        return Inertia::render("Stations/Index", [
+            "items" => $stations,
+            "search" => $request->input("search", ""),
+            "order_by" => $request->input("order_by", "name;asc"),
+            "page" => $request->input("page", 1),
+            "paginate" => $request->input("paginate", 25),
+        ]);
     }
 
     /**

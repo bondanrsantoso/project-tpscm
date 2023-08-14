@@ -40,6 +40,12 @@ export default function Authenticated({ user, header, children }) {
 								>
 									<i className="bi-box mr-2"></i> Products
 								</NavLink>
+								<NavLink
+									href={route('stations.index')}
+									active={route().current('stations.index')}
+								>
+									<i className="bi-box mr-2"></i> Stations
+								</NavLink>
 							</div>
 						</div>
 

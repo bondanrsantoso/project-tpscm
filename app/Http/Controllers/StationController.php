@@ -28,7 +28,7 @@ class StationController extends Controller
 
         $stations = $stationQuery->paginate($request->input("paginate", 25));
 
-        // TODO: Add valid intertia view for product search/list
+        // DONE: Add valid intertia view for product search/list
         return Inertia::render("Stations/Index", [
             "items" => $stations,
             "search" => $request->input("search", ""),
@@ -43,7 +43,7 @@ class StationController extends Controller
      */
     public function create()
     {
-        // TODO make inertia form view for creating and/or updating station data
+        // DONE make inertia form view for creating and/or updating station data
     }
 
     /**
@@ -80,7 +80,7 @@ class StationController extends Controller
      */
     public function edit(Station $station)
     {
-        // TODO make inertia form view for creating and/or updating station data
+        // DONE make inertia form view for creating and/or updating station data
     }
 
     /**

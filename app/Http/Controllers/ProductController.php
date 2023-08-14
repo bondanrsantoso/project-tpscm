@@ -28,7 +28,7 @@ class ProductController extends Controller
 
         $products = $productQuery->paginate($request->input("paginate", 25));
 
-        // DOING: Add valid intertia view for product search/list
+        // DONE: Add valid intertia view for product search/list
         return Inertia::render("Products/Index", [
             "items" => $products,
             "search" => $request->input("search", ""),
@@ -43,7 +43,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        // TODO: inertia form view
+        // DONE: inertia form view
     }
 
     /**
@@ -90,7 +90,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        // TODO: product edit inertia view (probably the same one as for crete())
+        // DONE: product edit inertia view (probably the same one as for crete())
     }
 
     /**

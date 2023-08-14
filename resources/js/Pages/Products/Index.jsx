@@ -95,7 +95,6 @@ function ProductsList({
 	const editProduct = (e) => {
 		e.preventDefault()
 		patch(`/products/${itemForm.id}`, {
-			forceFormData: true,
 			onSuccess: () => {
 				closeModal()
 				get(route('products.index'))

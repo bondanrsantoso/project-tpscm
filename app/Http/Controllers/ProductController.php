@@ -28,6 +28,10 @@ class ProductController extends Controller
 
         $products = $productQuery->paginate($request->input("paginate", 25));
 
+        if ($request->expectsJson()) {
+            return response()->json($products);
+        }
+
         // DONE: Add valid intertia view for product search/list
         return Inertia::render("Products/Index", [
             "items" => $products,

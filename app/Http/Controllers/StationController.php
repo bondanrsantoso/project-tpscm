@@ -28,6 +28,10 @@ class StationController extends Controller
 
         $stations = $stationQuery->paginate($request->input("paginate", 25));
 
+        if ($request->expectsJson()) {
+            return response()->json($stations);
+        }
+
         // DONE: Add valid intertia view for product search/list
         return Inertia::render("Stations/Index", [
             "items" => $stations,

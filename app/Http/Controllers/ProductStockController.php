@@ -27,15 +27,15 @@ class ProductStockController extends Controller
 
         $productStockQuery->addSelect([
             "station_name" =>
-            Station::whereColumn("stations.id", "product_transactions.station_id")
+            Station::whereColumn("stations.id", "product_stock.station_id")
                 ->select(["name"])
                 ->limit(1),
             "product_name" =>
-            Product::whereColumn("products.id", "product_transactions.product_id")
+            Product::whereColumn("products.id", "product_stock.product_id")
                 ->select(["name"])
                 ->limit(1),
             "unit" =>
-            Product::whereColumn("products.id", "product_transactions.product_id")
+            Product::whereColumn("products.id", "product_stock.product_id")
                 ->select(["stock_unit"])
                 ->limit(1),
         ]);

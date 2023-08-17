@@ -5,18 +5,11 @@ import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head, useForm, Link } from '@inertiajs/react'
 import { useEffect, useState } from 'react'
-import { FaPlus, FaRegPenToSquare } from 'react-icons/fa6'
+import { FaPlus, FaRegPenToSquare, FaTrash } from 'react-icons/fa6'
 import Modal from '@/Components/Modal'
 import InputLabel from '@/Components/InputLabel'
 import TextArea from '@/Components/TextArea'
-
-function formatIDR(amount) {
-	const formatter = new Intl.NumberFormat('id', {
-		currency: 'IDR',
-		style: 'currency',
-	})
-	return formatter.format(amount)
-}
+import AddStationModal from './Components/AddStationModal'
 
 function StationsList({
 	items,
@@ -27,71 +20,41 @@ function StationsList({
 	paginate,
 	...props
 }) {
-	const { data, setData, get } = useForm({
+	const { data, setData, get, delete: deleteStation } = useForm({
 		search,
 		order_by,
 		page,
 		paginate,
 	})
 
-	const [needRefresh, setNeedRefresh] = useState(false)
-	const [showAddModal, setShowAddModal] = useState(false)
+	const {get: getItemDetail } = useForm()
+
 	const [isEdit, setIsEdit] = useState(false)
-	const { data: itemForm, setData: setFormItem, post, patch, put, processing } = useForm({
+	const [openModal, setOpenModal] = useState(false)
+	const [selectedItem, setSelectedItem] =useState()
+	const INITIAL_FORM_DATA = {
 		name: null,
 		description: null,
 		address: null,
 		type: 'warehouse',
 		lat: null,
 		lng: null,
-	})
+	}
 
 	function refresh() {
 		get(route('stations.index'))
 	}
 
-	const openAddModal = () => {
-		setShowAddModal(true)
-		setIsEdit(false)
-	}
-
 	const openEditModal = (item) => {
-		delete item['image_url']
-		setFormItem(item)
-		setShowAddModal(true)
 		setIsEdit(true)
+		setSelectedItem(item)
+		setOpenModal(true)
 	}
 
-	const closeModal = () => {
-		setShowAddModal(false)
-	}
-
-	const handleSave = (e) => {
-		if(isEdit){
-			editProduct(e)
-		} else {
-			addProduct(e)
-		}
-	}
-
-	const addProduct = (e) => {
-		post(route('stations.store'), {
-			forceFormData: true,
-			onSuccess: () => {
-				closeModal()
-				get(route('stations.index'))
-			}
-		})
-	}
-
-	const editProduct = (e) => {
-		e.preventDefault()
-		patch(`/stations/${itemForm.id}`, {
-			onSuccess: () => {
-				closeModal()
-				get(route('stations.index'))
-			}
-		})
+	const openAddModal = () => {
+		setIsEdit(false)
+		setSelectedItem(INITIAL_FORM_DATA)
+		setOpenModal(true)
 	}
 
 	useEffect(() => {
@@ -110,7 +73,6 @@ function StationsList({
 			refresh()
 		}
 	}, [data.page])
-
 	return (
 		<AuthenticatedLayout
 			header={<h2 className="text-lg font-bold">Stations</h2>}
@@ -236,16 +198,19 @@ function StationsList({
 					<tbody>
 						{items.data.map((item) => (
 							<tr key={item.id}>
-								<td className="p-2 border">{item.name}</td>
+								<td className="p-2 border text-blue-600 underline"><button onClick={()=>getItemDetail(route('stations.show', [item.id]))}>{item.name}</button></td>
 								<td className="p-2 border">{item.description}</td>
 								<td className="p-2 border">{item.address}</td>
 								<td className="p-2 border">{item.type}</td>
 								<td className="p-2 border">{item.lat.toString()}</td>
 								<td className="p-2 border">{item.lng.toString()}</td>
 								<td className="p-2 border">
-									<div className="flex justify-center">
+									<div className="flex justify-center gap-2">
 										<button onClick={()=>openEditModal(item)}>
 											<FaRegPenToSquare/>
+										</button>
+										<button onClick={()=>deleteStation(route('products.destroy', item.id))}>
+											<FaTrash/>
 										</button>
 									</div>
 								</td>
@@ -303,107 +268,7 @@ function StationsList({
 						)}
 					</div>
 				</div>
-
-				{/* <pre>{JSON.stringify(items, null, 2)}</pre> */}
-				<Modal show={showAddModal} onClose={closeModal}>
-					<form className="p-6" onSubmit={handleSave}>
-						<h2 className="text-lg font-medium text-gray-900 mb-4">
-							{ isEdit ? 'Edit Stations' : 'Add Stations' }
-						</h2>
-
-						<div className="grid grid-cols-2 gap-3 gap-y-5">
-							<div>
-								<InputLabel htmlFor="name" value="Name" className="mb-1" />
-
-								<TextInput
-									id="name"
-									type="text"
-									name="name"
-									className="w-full"
-									isFocused
-									placeholder="Name"
-									value={itemForm.name}
-									onChange={e=>setFormItem('name', e.target.value)}
-								/>
-							</div>
-							<div>
-								<InputLabel htmlFor="type" value="Type" className="mb-1" />
-
-								<Select
-									className="w-full"
-									value={itemForm.type}
-									onChange={(e) => {
-										setFormItem('type', e.target.value)
-									}}
-								>
-									<option value="warehouse">Warehouse</option>
-									<option value="plant">Plant</option>
-								</Select>
-							</div>
-							<div className="col-span-2">
-								<InputLabel htmlFor="description" value="Description" className="mb-1" />
-
-								<TextArea
-									id="description"
-									type="text"
-									name="description"
-									className="w-full"
-									isFocused
-									placeholder="Description"
-									value={itemForm.description}
-									onChange={e=>setFormItem('description', e.target.value)}
-								/>
-							</div>
-							<div className="col-span-2">
-								<InputLabel htmlFor="address" value="Address" className="mb-1" />
-
-								<TextArea
-									id="address"
-									type="text"
-									name="address"
-									className="w-full"
-									isFocused
-									placeholder="Address"
-									value={itemForm.address}
-									onChange={e=>setFormItem('address', e.target.value)}
-								/>
-							</div>
-							<div>
-								<InputLabel htmlFor="lat" value="Lat" className="mb-1" />
-
-								<TextInput
-									id="lat"
-									type="text"
-									name="lat"
-									className="w-full"
-									isFocused
-									placeholder="Lat"
-									value={itemForm.lat}
-									onChange={e=>setFormItem('lat', e.target.value)}
-								/>
-							</div>
-							<div>
-								<InputLabel htmlFor="long" value="Long" className="mb-1" />
-
-								<TextInput
-									id="long"
-									type="text"
-									name="long"
-									className="w-full"
-									isFocused
-									placeholder="Long"
-									value={itemForm.lng}
-									onChange={e=>setFormItem('lng', e.target.value)}
-								/>
-							</div>
-						</div>
-
-						<div className="mt-6 flex justify-end">
-							<SecondaryButton onClick={closeModal}>Cancel</SecondaryButton>
-							<PrimaryButton className="ml-3" type="submit" disabled={processing}>Save</PrimaryButton>
-						</div>
-					</form>
-				</Modal>
+				<AddStationModal open={openModal} onClose={()=>setOpenModal(false)} isEdit={isEdit} item={selectedItem} />
 			</div>
 		</AuthenticatedLayout>
 	)

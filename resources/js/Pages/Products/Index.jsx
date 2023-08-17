@@ -28,14 +28,19 @@ function ProductsList({
 	paginate,
 	...props
 }) {
-	const { data, setData, get } = useForm({
+	const { data, setData, get, delete: deleteProduct } = useForm({
 		search,
 		order_by,
 		page,
 		paginate,
 	})
 
-	const {get: getItemDetail } = useForm()
+	const {get: getItemDetail } = useForm({
+		search,
+		order_by,
+		page,
+		paginate,
+	})
 
 	const [isEdit, setIsEdit] = useState(false)
 	const [openModal, setOpenModal] = useState(false)

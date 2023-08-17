@@ -76,6 +76,13 @@ class StationController extends Controller
      */
     public function show(Station $station)
     {
+        $station->load([
+            "products",
+            "productTransactions",
+            "material",
+            "materialTransactions",
+        ]);
+
         // TODO make inertia form view for showing station detail
     }
 

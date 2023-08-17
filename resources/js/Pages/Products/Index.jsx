@@ -5,10 +5,11 @@ import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head, useForm, Link } from '@inertiajs/react'
 import { useEffect, useState } from 'react'
-import { FaPlus, FaRegPenToSquare } from 'react-icons/fa6'
+import { FaPlus, FaRegPenToSquare, FaTrash } from 'react-icons/fa6'
 import Modal from '@/Components/Modal'
 import InputLabel from '@/Components/InputLabel'
 import TextArea from '@/Components/TextArea'
+import AddProductModal from './Components/AddProductModal'
 
 function formatIDR(amount) {
 	const formatter = new Intl.NumberFormat('id', {
@@ -34,10 +35,12 @@ function ProductsList({
 		paginate,
 	})
 
-	const [needRefresh, setNeedRefresh] = useState(false)
-	const [showAddModal, setShowAddModal] = useState(false)
+	const {get: getItemDetail } = useForm()
+
 	const [isEdit, setIsEdit] = useState(false)
-	const { data: itemForm, setData: setFormItem, post, patch, put, processing } = useForm({
+	const [openModal, setOpenModal] = useState(false)
+	const [selectedItem, setSelectedItem] =useState()
+	const INITIAL_FORM_DATA = {
 		sku: null,
 		brand: null,
 		variants: null,
@@ -51,55 +54,22 @@ function ProductsList({
 		depth: null,
 		base_value: null,
 		stock_unit: null
-	})
+	}
 
 	function refresh() {
 		get(route('products.index'))
 	}
 
-	const openAddModal = () => {
-		setShowAddModal(true)
-		setIsEdit(false)
-	}
-
 	const openEditModal = (item) => {
-		delete item['image_url']
-		setFormItem(item)
-		setShowAddModal(true)
 		setIsEdit(true)
+		setSelectedItem(item)
+		setOpenModal(true)
 	}
 
-	const closeModal = () => {
-		setShowAddModal(false)
-	}
-
-	const handleSave = (e) => {
-		if(isEdit){
-			editProduct(e)
-		} else {
-			addProduct(e)
-		}
-	}
-
-	const addProduct = (e) => {
-		e.preventDefault()
-		post(route('products.store'), {
-			forceFormData: true,
-			onSuccess: () => {
-				closeModal()
-				get(route('products.index'))
-			}
-		})
-	}
-
-	const editProduct = (e) => {
-		e.preventDefault()
-		patch(`/products/${itemForm.id}`, {
-			onSuccess: () => {
-				closeModal()
-				get(route('products.index'))
-			}
-		})
+	const openAddModal = () => {
+		setIsEdit(false)
+		setSelectedItem(INITIAL_FORM_DATA)
+		setOpenModal(true)
 	}
 
 	useEffect(() => {
@@ -119,16 +89,12 @@ function ProductsList({
 		}
 	}, [data.page])
 
-	useEffect(() => {
-		setFormItem('gross_weight', parseFloat(itemForm.net_weight) + parseFloat(itemForm.tare_weight))
-	}, [itemForm.net_weight, itemForm.tare_weight])
-
 	return (
 		<AuthenticatedLayout
 			header={<h2 className="text-lg font-bold">Products</h2>}
 			user={auth.user}
 		>
-			<Head title="Items"></Head>
+			<Head title="Product Items"></Head>
 			<div className="max-w-7xl mx-auto py-10">
 				<div className="flex flex-row justify-between">
 					<h1 className="text-xl font-bold">Products List</h1>
@@ -259,7 +225,7 @@ function ProductsList({
 										className="w-20 max-h-20 mx-auto"
 									/>
 								</td>
-								<td className="p-2 border"><Link href={`/products/${item.id}`}>{item.name}</Link></td>
+								<td className="p-2 border text-blue-600 underline"><button onClick={()=>getItemDetail(route('products.show', [item.id]))}>{item.name}</button></td>
 								<td className="p-2 border">{item.brand}</td>
 								<td className="p-2 border">{item.variants}</td>
 								<td className="p-2 border">
@@ -278,9 +244,12 @@ function ProductsList({
 								</td>
 								<td className="p-2 border">{item.stock_unit}</td>
 								<td className="p-2 border">
-									<div className="flex justify-center">
+									<div className="flex justify-center gap-2">
 										<button onClick={()=>openEditModal(item)}>
 											<FaRegPenToSquare/>
+										</button>
+										<button onClick={()=>deleteProduct(route('products.destroy', item.id))}>
+											<FaTrash/>
 										</button>
 									</div>
 								</td>
@@ -340,187 +309,7 @@ function ProductsList({
 				</div>
 
 				{/* <pre>{JSON.stringify(items, null, 2)}</pre> */}
-				<Modal show={showAddModal} onClose={closeModal}>
-					<form className="p-6" onSubmit={handleSave}>
-						<h2 className="text-lg font-medium text-gray-900 mb-4">
-							{ isEdit ? 'Edit Item' : 'Add Item' }
-						</h2>
-
-						<div className="grid grid-cols-2 gap-3 gap-y-5">
-							<div className='col-span-2'>
-								<InputLabel htmlFor="sku" value="SKU" className="mb-1" />
-
-								<TextInput
-									id="sku"
-									type="text"
-									name="sku"
-									className="w-full"
-									isFocused
-									placeholder="SKU"
-									value={itemForm.sku}
-									onChange={e=>setFormItem('sku', e.target.value)}
-								/>
-							</div>
-							<div>
-								<InputLabel htmlFor="brand" value="Brand" className="mb-1" />
-
-								<TextInput
-									id="brand"
-									type="text"
-									name="brand"
-									className="w-full"
-									isFocused
-									placeholder="Brand"
-									value={itemForm.brand}
-									onChange={e=>setFormItem('brand', e.target.value)}
-								/>
-							</div>
-							<div>
-								<InputLabel htmlFor="variant" value="Variant" className="mb-1" />
-
-								<TextInput
-									id="variant"
-									type="text"
-									name="variant"
-									className="w-full"
-									isFocused
-									placeholder="Variant"
-									value={itemForm.variants}
-									onChange={e=>setFormItem('variants', e.target.value)}
-								/>
-							</div>
-							<div>
-								<InputLabel htmlFor="value" value="Value" className="mb-1" />
-
-								<TextInput
-									id="value"
-									type="number"
-									name="value"
-									className="w-full"
-									isFocused
-									placeholder="Value"
-									value={itemForm.base_value}
-									onChange={e=>setFormItem('base_value', e.target.value)}
-								/>
-							</div>
-							<div>
-								<InputLabel htmlFor="stock_unit" value="Stock Unit" className="mb-1" />
-
-								<TextInput
-									id="stock_unit"
-									type="text"
-									name="stock_unit"
-									className="w-full"
-									isFocused
-									placeholder="Stock Unit"
-									value={itemForm.stock_unit}
-									onChange={e=>setFormItem('stock_unit', e.target.value)}
-								/>
-							</div>
-							<div className="col-span-2">
-								<InputLabel htmlFor="weight" value="Weight (gr)" className="mb-1" />
-
-								<div
-									id="weight"
-									name="weight"
-									className="flex flex-row gap-2"
-								>
-									<TextInput
-										type="number"
-										className="w-full"
-										isFocused
-										placeholder="Nett Weight"
-										value={itemForm.net_weight}
-										onChange={e=>setFormItem('net_weight', e.target.value)}
-									/>
-									<TextInput
-										type="number"
-										className="w-full"
-										isFocused
-										placeholder="Tare Weight"
-										value={itemForm.tare_weight}
-										onChange={e=>setFormItem('tare_weight', e.target.value)}
-									/>
-									<TextInput
-										type="number"
-										className="w-full"
-										isFocused
-										placeholder="Gross Weight"
-										value={itemForm.gross_weight}
-										disabled
-									/>
-								</div>
-							</div>
-							<div className="col-span-2">
-								<InputLabel htmlFor="dimensions" value="Dimensions (mm)" className="mb-1" />
-
-								<div
-									id="dimensions"
-									name="dimensions"
-									className="flex flex-row gap-2"
-								>
-									<TextInput
-										type="number"
-										className="w-full"
-										isFocused
-										placeholder="Width"
-										value={itemForm.width}
-										onChange={e=>setFormItem('width', e.target.value)}
-									/>
-									<TextInput
-										type="number"
-										className="w-full"
-										isFocused
-										placeholder="Height"
-										value={itemForm.height}
-										onChange={e=>setFormItem('height', e.target.value)}
-									/>
-									<TextInput
-										type="number"
-										className="w-full"
-										isFocused
-										placeholder="Depth"
-										value={itemForm.depth}
-										onChange={e=>setFormItem('depth', e.target.value)}
-									/>
-								</div>
-							</div>
-							<div className="col-span-2">
-								<InputLabel htmlFor="image" value="Image Url" className="mb-1" />
-
-								<TextInput
-									id="image"
-									type="file"
-									accept="image/png, image/gif, image/jpeg"
-									name="image"
-									className="w-full"
-									isFocused
-									placeholder="Image Url"
-									onChange={e=>setFormItem('image', e.target.files[0])}
-								/>
-							</div>
-							<div className="col-span-2">
-								<InputLabel htmlFor="description" value="Description" className="mb-1" />
-
-								<TextArea
-									id="description"
-									type="text"
-									name="description"
-									className="w-full"
-									isFocused
-									placeholder="Description"
-									value={itemForm.description}
-									onChange={e=>setFormItem('description', e.target.value)}
-								/>
-							</div>
-						</div>
-
-						<div className="mt-6 flex justify-end">
-							<SecondaryButton onClick={closeModal}>Cancel</SecondaryButton>
-							<PrimaryButton className="ml-3" type="submit" disabled={processing}>Save</PrimaryButton>
-						</div>
-					</form>
-				</Modal>
+				<AddProductModal open={openModal} onClose={()=>setOpenModal(false)} isEdit={isEdit} item={selectedItem}/>
 			</div>
 		</AuthenticatedLayout>
 	)

@@ -4,6 +4,7 @@ import Dropdown from '@/Components/Dropdown'
 import NavLink from '@/Components/NavLink'
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink'
 import { Link } from '@inertiajs/react'
+import NavDropdown from '@/Components/NavDropDown'
 
 export default function Authenticated({ user, header, children }) {
 	const [showingNavigationDropdown, setShowingNavigationDropdown] =
@@ -28,24 +29,38 @@ export default function Authenticated({ user, header, children }) {
 								>
                                     Dashboard
 								</NavLink>
-								<NavLink
-									href={route('items.index')}
-									active={route().current('items.index')}
-								>
-									<i className="bi-box mr-2"></i> Items
-								</NavLink>
-								<NavLink
-									href={route('products.index')}
-									active={route().current('products.index')}
-								>
-									<i className="bi-box mr-2"></i> Products
-								</NavLink>
-								<NavLink
-									href={route('stations.index')}
-									active={route().current('stations.index')}
-								>
-									<i className="bi-box mr-2"></i> Stations
-								</NavLink>
+								<NavDropdown active={route().current('products.index')}>
+									<Dropdown>
+										<Dropdown.Trigger>
+														Products
+											<i className="bi-chevron-down ml-3"></i>
+										</Dropdown.Trigger>
+
+										<Dropdown.Content>
+											<Dropdown.Link
+												href={route('products.index')}
+											>
+													Products List
+											</Dropdown.Link>
+										</Dropdown.Content>
+									</Dropdown>
+								</NavDropdown>
+								<NavDropdown active={route().current('stations.index')}>
+									<Dropdown>
+										<Dropdown.Trigger>
+														Stations
+											<i className="bi-chevron-down ml-3"></i>
+										</Dropdown.Trigger>
+
+										<Dropdown.Content>
+											<Dropdown.Link
+												href={route('stations.index')}
+											>
+													Stations List
+											</Dropdown.Link>
+										</Dropdown.Content>
+									</Dropdown>
+								</NavDropdown>
 							</div>
 						</div>
 

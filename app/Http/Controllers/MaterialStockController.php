@@ -27,15 +27,15 @@ class MaterialStockController extends Controller
 
         $materialStockQuery->addSelect([
             "station_name" =>
-            Station::whereColumn("stations.id", "material_transactions.station_id")
+            Station::whereColumn("stations.id", "material_stock.station_id")
                 ->select(["name"])
                 ->limit(1),
             "material_name" =>
-            Material::whereColumn("materials.id", "material_transactions.material_id")
+            Material::whereColumn("materials.id", "material_stock.material_id")
                 ->select(["name"])
                 ->limit(1),
             "unit" =>
-            Material::whereColumn("materials.id", "material_transactions.material_id")
+            Material::whereColumn("materials.id", "material_stock.material_id")
                 ->select(["stock_unit"])
                 ->limit(1),
         ]);

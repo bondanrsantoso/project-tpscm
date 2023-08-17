@@ -55,6 +55,8 @@ Route::middleware('auth')->group(function () {
     Route::resource("material_transactions", MaterialTransactionController::class);
     Route::resource("material_stock", MaterialStockController::class)
         ->except(["update", "destroy"]);
+
+    Route::resource("product_orders", ProductOrderController::class);
 });
 
 require __DIR__ . '/auth.php';

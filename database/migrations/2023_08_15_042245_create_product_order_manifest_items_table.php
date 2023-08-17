@@ -39,6 +39,7 @@ return new class extends Migration
                         product_id,
                         station_id,
                         amount,
+                        manifest_id,
                         created_at,
                         updated_at
                     )
@@ -46,7 +47,8 @@ return new class extends Migration
                             UUID(),
                             NEW.product_id,
                             man_station_id,
-                            0 - NEW.qty,
+                            - NEW.qty,
+                            NEW.manifest_id,
                             CURRENT_TIMESTAMP,
                             CURRENT_TIMESTAMP
                         );
@@ -83,6 +85,7 @@ return new class extends Migration
                         product_id,
                         station_id,
                         amount,
+                        manifest_id,
                         created_at,
                         updated_at
                     )
@@ -90,7 +93,8 @@ return new class extends Migration
                             UUID(),
                             NEW.product_id,
                             new_station_id,
-                            0 - NEW.qty,
+                            -NEW.qty,
+                            NEW.manifest_id,
                             CURRENT_TIMESTAMP,
                             CURRENT_TIMESTAMP
                         );

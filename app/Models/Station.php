@@ -38,7 +38,7 @@ class Station extends Model
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(
-            Station::class,
+            Product::class,
             "product_stock",
             "station_id",
             "product_id",

@@ -95,7 +95,7 @@ class ProductOrderController extends Controller
             DB::beginTransaction();
 
 
-            $items = collect($valid["items"]);
+            $items = collect($request->input("items", []));
             $productIds = $items->pluck("product_id");
 
             /**
@@ -141,6 +141,11 @@ class ProductOrderController extends Controller
      */
     public function show(ProductOrder $productOrder)
     {
+        $productOrder->load([
+            "user",
+            "destinationStation",
+            "items",
+        ]);
         // TODO: product order detail inertia view
     }
 
@@ -149,6 +154,11 @@ class ProductOrderController extends Controller
      */
     public function edit(ProductOrder $productOrder)
     {
+        $productOrder->load([
+            "user",
+            "destinationStation",
+            "items",
+        ]);
         // TODO: product order editor inertia view
     }
 
@@ -170,6 +180,7 @@ class ProductOrderController extends Controller
             "items" => "sometimes|required|array",
             "items.*.product_id" => "sometimes|required|exists:products,id",
             "items.*.requested_qty" => "sometimes|required|numeric|min:1",
+            "items.*.received_qty" => "sometimes|required|numeric|min:0",
             "items.*.billed_subtotal" => "sometimes|required|numeric|min:0",
         ]);
 

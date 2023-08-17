@@ -40,4 +40,9 @@ class ProductOrder extends Model
     {
         return $this->hasMany(ProductOrderItem::class, "order_id", "id");
     }
+
+    public function manifests(): HasMany
+    {
+        return $this->hasMany(ProductOrderManifest::class, "order_id", "id");
+    }
 }

@@ -42,13 +42,9 @@ class ProductTransactionSeeder extends Seeder
                 $productId = $productIds->random();
                 $stationId = $stationIds->random();
 
-                $stock = $stocks[$productId . "-" . $stationId] ?? 0;
+                // $stock = $stocks[$productId . "-" . $stationId] ?? 0;
 
-                $insertedAmount = $stock > 0 ? rand(-$stock, 1000) : rand(15, 1000);
-
-                if ($insertedAmount < 0 && abs($insertedAmount) > $stock) {
-                    $insertedAmount = -$stock;
-                }
+                $insertedAmount = rand(1, 1000);
 
                 $transaction[] = [
                     "id" => Str::uuid(),

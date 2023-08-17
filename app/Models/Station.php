@@ -25,12 +25,12 @@ class Station extends Model
         "lng",
     ];
 
-    public function stocks(): HasMany
+    public function productStocks(): HasMany
     {
         return $this->hasMany(ProductStock::class, "station_id", "id");
     }
 
-    public function transactions(): HasMany
+    public function productTransactions(): HasMany
     {
         return $this->hasMany(ProductTransaction::class, "station_id", "id");
     }
@@ -42,6 +42,28 @@ class Station extends Model
             "product_stock",
             "station_id",
             "product_id",
+            "id",
+            "id"
+        )->withPivot(["amount"])->as("stock");
+    }
+
+    public function materialStocks(): HasMany
+    {
+        return $this->hasMany(MaterialStock::class, "station_id", "id");
+    }
+
+    public function materialTransactions(): HasMany
+    {
+        return $this->hasMany(MaterialTransaction::class, "station_id", "id");
+    }
+
+    public function materials(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Material::class,
+            "material_stock",
+            "station_id",
+            "material_id",
             "id",
             "id"
         )->withPivot(["amount"])->as("stock");

@@ -45,7 +45,7 @@ class Product extends Model
 
     public function transactions(): HasMany
     {
-        return $this->hasMany(ProductTransaction::class, "product_id", "id");
+        return $this->hasMany(ProductTransaction::class, "product_id", "id")->orderBy("created_at", "desc");
     }
 
     public function stations(): BelongsToMany

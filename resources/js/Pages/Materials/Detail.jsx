@@ -1,7 +1,7 @@
 import PrimaryButton from '@/Components/PrimaryButton'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head } from '@inertiajs/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FaRegPenToSquare } from 'react-icons/fa6'
 import AddMaterialModal from './Components/AddMaterialModal'
 
@@ -21,6 +21,13 @@ function MaterialDetail({
 }) {
 
 	const [openModal, setOpenModal] = useState(false)
+	const [selectedItem, setSelectedItem] =useState()
+
+	useEffect(()=>{
+		if(item){
+			setSelectedItem(item)
+		}
+	},[item])
 
 	return (
 		<AuthenticatedLayout
@@ -90,7 +97,7 @@ function MaterialDetail({
 					<div className='flex flex-row gap-4 justify-center w-full mt-10'>
 						<div>
 							<h3 className="text-md font-bold text-center">Stocks Table</h3>
-							<table className="table-auto mt-2 w-full">
+							<table className="table-auto mt-2 w-full" key='stocks'>
 								<thead>
 									<tr>
 										<th className="p-2 border-2">Station Name</th>
@@ -111,7 +118,7 @@ function MaterialDetail({
 						</div>
 						<div>
 							<h3 className="text-md font-bold text-center">Transactions Table</h3>
-							<table className="table-auto mt-2 w-full">
+							<table className="table-auto mt-2 w-full" key='transactions'>
 								<thead>
 									<tr>
 										<th className="p-2 border-2">Station Name</th>
@@ -134,7 +141,7 @@ function MaterialDetail({
 						</div>
 					</div>
 				</div>
-				<AddMaterialModal open={openModal} onClose={()=>setOpenModal(false)} isEdit="true" item={item}/>
+				<AddMaterialModal open={openModal} onClose={()=>setOpenModal(false)} isEdit="true" item={selectedItem}/>
 			</pre>
 		</AuthenticatedLayout>
 	)

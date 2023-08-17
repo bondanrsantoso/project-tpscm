@@ -3,12 +3,9 @@ import SecondaryButton from '@/Components/SecondaryButton'
 import Select from '@/Components/Select'
 import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
-import { Head, useForm, Link } from '@inertiajs/react'
+import { Head, useForm } from '@inertiajs/react'
 import { useEffect, useState } from 'react'
 import { FaPlus, FaRegPenToSquare, FaTrash } from 'react-icons/fa6'
-import Modal from '@/Components/Modal'
-import InputLabel from '@/Components/InputLabel'
-import TextArea from '@/Components/TextArea'
 import AddMaterialModal from './Components/AddMaterialModal'
 
 function formatIDR(amount) {
@@ -35,12 +32,7 @@ function MaterialsList({
 		paginate,
 	})
 
-	const {get: getItemDetail } = useForm({
-		search,
-		order_by,
-		page,
-		paginate,
-	})
+	const {get: getItemDetail } = useForm()
 
 	const [isEdit, setIsEdit] = useState(false)
 	const [openModal, setOpenModal] = useState(false)

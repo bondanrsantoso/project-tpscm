@@ -1,14 +1,8 @@
 import PrimaryButton from '@/Components/PrimaryButton'
-import SecondaryButton from '@/Components/SecondaryButton'
-import Select from '@/Components/Select'
-import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
-import { Head, useForm, Link } from '@inertiajs/react'
-import { useEffect, useState, useMemo } from 'react'
-import { FaPlus, FaRegPenToSquare, FaTrash } from 'react-icons/fa6'
-import Modal from '@/Components/Modal'
-import InputLabel from '@/Components/InputLabel'
-import TextArea from '@/Components/TextArea'
+import { Head } from '@inertiajs/react'
+import { useEffect, useState } from 'react'
+import { FaRegPenToSquare } from 'react-icons/fa6'
 import AddProductModal from './Components/AddProductModal'
 
 function formatIDR(amount) {
@@ -27,6 +21,13 @@ function ProductDetail({
 }) {
 
 	const [openModal, setOpenModal] = useState(false)
+	const [selectedItem, setSelectedItem] =useState()
+
+	useEffect(()=>{
+		if(item){
+			setSelectedItem(item)
+		}
+	},[item])
 
 	return (
 		<AuthenticatedLayout
@@ -140,7 +141,7 @@ function ProductDetail({
 						</div>
 					</div>
 				</div>
-				<AddProductModal open={openModal} onClose={()=>setOpenModal(false)} isEdit="true" item={item}/>
+				<AddProductModal open={openModal} onClose={()=>setOpenModal(false)} isEdit="true" item={selectedItem}/>
 			</pre>
 		</AuthenticatedLayout>
 	)

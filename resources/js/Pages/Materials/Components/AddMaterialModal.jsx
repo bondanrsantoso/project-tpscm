@@ -4,8 +4,8 @@ import PrimaryButton from '@/Components/PrimaryButton'
 import SecondaryButton from '@/Components/SecondaryButton'
 import TextArea from '@/Components/TextArea'
 import TextInput from '@/Components/TextInput'
-import { useEffect } from 'react'
 import { useForm } from '@inertiajs/react'
+import { useEffect } from 'react'
 
 export default function AddMaterialModal({open=false, onClose, isEdit=false, item}){
 	const { data: itemForm, setData: setFormItem, post, patch, processing } = useForm({
@@ -26,29 +26,29 @@ export default function AddMaterialModal({open=false, onClose, isEdit=false, ite
 
 	const handleSave = (e) => {
 		if(isEdit){
-			editProduct(e)
+			editMaterial(e)
 		} else {
-			addProduct(e)
+			addMaterial(e)
 		}
 	}
 
-	const addProduct = (e) => {
+	const addMaterial = (e) => {
 		e.preventDefault()
-		post(route('products.store'), {
+		post(route('materials.store'), {
 			forceFormData: true,
 			onSuccess: () => {
 				onClose()
-				get(route('products.index'))
+				get(route('materials.index'))
 			}
 		})
 	}
 
-	const editProduct = (e) => {
+	const editMaterial = (e) => {
 		e.preventDefault()
-		post(`/products/${itemForm.id}`, {
+		post(`/materials/${itemForm.id}`, {
 			onSuccess: () => {
 				onClose()
-				get(route('products.index'))
+				get(route('materials.index'))
 			}
 		})
 	}

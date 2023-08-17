@@ -4,8 +4,8 @@ import PrimaryButton from '@/Components/PrimaryButton'
 import SecondaryButton from '@/Components/SecondaryButton'
 import TextArea from '@/Components/TextArea'
 import TextInput from '@/Components/TextInput'
-import { useEffect } from 'react'
 import { useForm } from '@inertiajs/react'
+import { useEffect } from 'react'
 
 export default function AddProductModal({open=false, onClose, isEdit=false, item}){
 	const { data: itemForm, setData: setFormItem, post, patch, processing } = useForm({

@@ -1,15 +1,9 @@
 import PrimaryButton from '@/Components/PrimaryButton'
-import SecondaryButton from '@/Components/SecondaryButton'
-import Select from '@/Components/Select'
-import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
-import { Head, useForm, Link } from '@inertiajs/react'
-import { useEffect, useState, useMemo } from 'react'
-import { FaPlus, FaRegPenToSquare, FaTrash } from 'react-icons/fa6'
-import Modal from '@/Components/Modal'
-import InputLabel from '@/Components/InputLabel'
-import TextArea from '@/Components/TextArea'
-import AddStationModal from './Components/AddStationModal'
+import { Head } from '@inertiajs/react'
+import { useState } from 'react'
+import { FaRegPenToSquare } from 'react-icons/fa6'
+import AddMaterialModal from './Components/AddMaterialModal'
 
 function formatIDR(amount) {
 	const formatter = new Intl.NumberFormat('id', {
@@ -19,7 +13,7 @@ function formatIDR(amount) {
 	return formatter.format(amount)
 }
 
-function StationDetail({
+function MaterialDetail({
 	item,
 	auth,
 	id,
@@ -30,14 +24,14 @@ function StationDetail({
 
 	return (
 		<AuthenticatedLayout
-			header={<h2 className="text-lg font-bold">Product Detail</h2>}
+			header={<h2 className="text-lg font-bold">Material Detail</h2>}
 			user={auth.user}
 		>
-			<Head title="Product Detail"></Head>
+			<Head title="Material Detail"></Head>
 			<pre className="max-w-7xl mx-auto py-10">
-				{/* <div className='flex flex-row justify-end'>
+				<div className='flex flex-row justify-end'>
 					<PrimaryButton className="shrink-0 bg-blue-900 hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-950" onClick={() => setOpenModal(true)}>
-						<FaRegPenToSquare className="mr-2"/> Edit Product
+						<FaRegPenToSquare className="mr-2"/> Edit Material
 					</PrimaryButton>
 				</div>
 				<div className='flex flex-col items-center mx-10'>
@@ -139,12 +133,11 @@ function StationDetail({
 							</table>
 						</div>
 					</div>
-				</div> */}
-				{JSON.stringify(items, null, 2)}
-				<AddStationModal open={openModal} onClose={()=>setOpenModal(false)} isEdit="true" item={item}/>
+				</div>
+				<AddMaterialModal open={openModal} onClose={()=>setOpenModal(false)} isEdit="true" item={item}/>
 			</pre>
 		</AuthenticatedLayout>
 	)
 }
 
-export default StationDetail
+export default MaterialDetail

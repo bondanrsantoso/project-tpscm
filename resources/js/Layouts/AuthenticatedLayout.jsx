@@ -45,6 +45,22 @@ export default function Authenticated({ user, header, children }) {
 										</Dropdown.Content>
 									</Dropdown>
 								</NavDropdown>
+								<NavDropdown active={route().current('materials.index')}>
+									<Dropdown>
+										<Dropdown.Trigger>
+														Materials
+											<i className="bi-chevron-down ml-3"></i>
+										</Dropdown.Trigger>
+
+										<Dropdown.Content>
+											<Dropdown.Link
+												href={route('materials.index')}
+											>
+													Materials List
+											</Dropdown.Link>
+										</Dropdown.Content>
+									</Dropdown>
+								</NavDropdown>
 								<NavDropdown active={route().current('stations.index')}>
 									<Dropdown>
 										<Dropdown.Trigger>

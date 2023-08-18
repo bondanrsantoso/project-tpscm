@@ -92,6 +92,10 @@ class MaterialStockController extends Controller
      */
     public function show(MaterialStock $materialStock)
     {
+        $materialStock->load([
+            "material",
+            "station"
+        ]);
         // TODO: material stock detail inertia view
     }
 

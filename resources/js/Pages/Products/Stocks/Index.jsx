@@ -257,7 +257,6 @@ function ProductStocksList({
 				</div>
 
 				{/* <pre>{JSON.stringify(items, null, 2)}</pre> */}
-				<AddStockModal open={openModal} onClose={()=>setOpenModal(false)} isEdit={isEdit} item={selectedItem}/>
 			</div>
 		</AuthenticatedLayout>
 	)

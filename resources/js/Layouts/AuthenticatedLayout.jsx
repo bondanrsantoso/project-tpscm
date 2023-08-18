@@ -4,6 +4,7 @@ import Dropdown from '@/Components/Dropdown'
 import NavLink from '@/Components/NavLink'
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink'
 import { Link } from '@inertiajs/react'
+import NavDropdown from '@/Components/NavDropDown'
 
 export default function Authenticated({ user, header, children }) {
 	const [showingNavigationDropdown, setShowingNavigationDropdown] =
@@ -28,24 +29,74 @@ export default function Authenticated({ user, header, children }) {
 								>
                                     Dashboard
 								</NavLink>
-								<NavLink
-									href={route('items.index')}
-									active={route().current('items.index')}
-								>
-									<i className="bi-box mr-2"></i> Items
-								</NavLink>
-								<NavLink
-									href={route('products.index')}
-									active={route().current('products.index')}
-								>
-									<i className="bi-box mr-2"></i> Products
-								</NavLink>
-								<NavLink
-									href={route('stations.index')}
-									active={route().current('stations.index')}
-								>
-									<i className="bi-box mr-2"></i> Stations
-								</NavLink>
+								<NavDropdown active={route().current('products.index') || route().current('product_stock.index') || route().current('product_transactions.index')}>
+									<Dropdown>
+										<Dropdown.Trigger>
+														Products
+											<i className="bi-chevron-down ml-3"></i>
+										</Dropdown.Trigger>
+
+										<Dropdown.Content>
+											<Dropdown.Link
+												href={route('products.index')}
+											>
+													Products List
+											</Dropdown.Link>
+											<Dropdown.Link
+												href={route('product_stock.index')}
+											>
+													Products Stock List
+											</Dropdown.Link>
+											<Dropdown.Link
+												href={route('product_transactions.index')}
+											>
+													Products Transactions List
+											</Dropdown.Link>
+										</Dropdown.Content>
+									</Dropdown>
+								</NavDropdown>
+								<NavDropdown active={route().current('materials.index') || route().current('material_stock.index') || route().current('material_transactions.index')}>
+									<Dropdown>
+										<Dropdown.Trigger>
+														Materials
+											<i className="bi-chevron-down ml-3"></i>
+										</Dropdown.Trigger>
+
+										<Dropdown.Content>
+											<Dropdown.Link
+												href={route('materials.index')}
+											>
+													Materials List
+											</Dropdown.Link>
+											<Dropdown.Link
+												href={route('material_stock.index')}
+											>
+													Materials Stock List
+											</Dropdown.Link>
+											<Dropdown.Link
+												href={route('material_transactions.index')}
+											>
+													Materials Transactions List
+											</Dropdown.Link>
+										</Dropdown.Content>
+									</Dropdown>
+								</NavDropdown>
+								<NavDropdown active={route().current('stations.index')}>
+									<Dropdown>
+										<Dropdown.Trigger>
+														Stations
+											<i className="bi-chevron-down ml-3"></i>
+										</Dropdown.Trigger>
+
+										<Dropdown.Content>
+											<Dropdown.Link
+												href={route('stations.index')}
+											>
+													Stations List
+											</Dropdown.Link>
+										</Dropdown.Content>
+									</Dropdown>
+								</NavDropdown>
 							</div>
 						</div>
 

@@ -86,6 +86,11 @@ class ProductController extends Controller
             "transactions" => ["station"]
         ]);
 
+        return Inertia::render("Products/Detail", [
+            "item" => $product,
+            "id" => $product->id
+        ]);
+
         // TODO: product detail inertia view
     }
 

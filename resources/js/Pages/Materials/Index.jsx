@@ -3,15 +3,20 @@ import SecondaryButton from '@/Components/SecondaryButton'
 import Select from '@/Components/Select'
 import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
-import { Head, useForm, Link } from '@inertiajs/react'
+import { Head, useForm } from '@inertiajs/react'
 import { useEffect, useState } from 'react'
 import { FaPlus, FaRegPenToSquare, FaTrash } from 'react-icons/fa6'
-import Modal from '@/Components/Modal'
-import InputLabel from '@/Components/InputLabel'
-import TextArea from '@/Components/TextArea'
-import AddStationModal from './Components/AddStationModal'
+import AddMaterialModal from './Components/AddMaterialModal'
 
-function StationsList({
+function formatIDR(amount) {
+	const formatter = new Intl.NumberFormat('id', {
+		currency: 'IDR',
+		style: 'currency',
+	})
+	return formatter.format(amount)
+}
+
+function MaterialsList({
 	items,
 	auth,
 	search,
@@ -20,7 +25,7 @@ function StationsList({
 	paginate,
 	...props
 }) {
-	const { data, setData, get, delete: deleteStation } = useForm({
+	const { data, setData, get, delete: deleteMaterial } = useForm({
 		search,
 		order_by,
 		page,
@@ -33,16 +38,23 @@ function StationsList({
 	const [openModal, setOpenModal] = useState(false)
 	const [selectedItem, setSelectedItem] =useState()
 	const INITIAL_FORM_DATA = {
-		name: null,
+		sku: null,
+		brand: null,
+		variants: null,
 		description: null,
-		address: null,
-		type: 'warehouse',
-		lat: null,
-		lng: null,
+		image: null,
+		net_weight: null,
+		gross_weight: null,
+		tare_weight: null,
+		width: null,
+		height: null,
+		depth: null,
+		base_value: null,
+		stock_unit: null
 	}
 
 	function refresh() {
-		get(route('stations.index'))
+		get(route('materials.index'))
 	}
 
 	const openEditModal = (item) => {
@@ -73,17 +85,18 @@ function StationsList({
 			refresh()
 		}
 	}, [data.page])
+
 	return (
 		<AuthenticatedLayout
-			header={<h2 className="text-lg font-bold">Stations</h2>}
+			header={<h2 className="text-lg font-bold">Materials</h2>}
 			user={auth.user}
 		>
-			<Head title="Items"></Head>
+			<Head title="Material Items"></Head>
 			<div className="max-w-7xl mx-auto py-10">
 				<div className="flex flex-row justify-between">
-					<h1 className="text-xl font-bold">Stations List</h1>
+					<h1 className="text-xl font-bold">Materials List</h1>
 					<PrimaryButton className="shrink-0 bg-blue-900 hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-950" onClick={openAddModal}>
-						<FaPlus className="mr-2"/> Add Stations
+						<FaPlus className="mr-2"/> Add Material
 					</PrimaryButton>
 				</div>
 				<form
@@ -110,11 +123,11 @@ function StationsList({
 						<option value="name;desc">Name Z-A</option>
 						<option value="updated_at;desc">Latest</option>
 						<option value="updated_at;asc">Oldest</option>
-						<option value="type;asc">
-                            Type ASC
+						<option value="gross_weight;asc">
+                            Weight: Lightest first
 						</option>
-						<option value="type;desc">
-							Type DESC
+						<option value="gross_weight;desc">
+                            Weight: Heaviest first
 						</option>
 					</Select>
 					<div className="border rounded-md flex flex-row items-baseline w-full bg-white">
@@ -129,7 +142,7 @@ function StationsList({
 						/>
 					</div>
 					<PrimaryButton type="submit" className="shrink-0">
-                        Search Stations
+                        Search Materials
 					</PrimaryButton>
 				</form>
 
@@ -186,30 +199,53 @@ function StationsList({
 				<table className="table-auto mt-2 w-full">
 					<thead>
 						<tr>
+							<th className="p-2 border">SKU</th>
+							<th className="p-2 border">Image</th>
 							<th className="p-2 border">Name</th>
-							<th className="p-2 border">Description</th>
-							<th className="p-2 border">Address</th>
-							<th className="p-2 border">Type</th>
-							<th className="p-2 border">Lat</th>
-							<th className="p-2 border">Long</th>
+							<th className="p-2 border">Brand</th>
+							<th className="p-2 border">Variants</th>
+							<th className="p-2 border">Dimensions</th>
+							<th className="p-2 border">Weight</th>
+							<th className="p-2 border">Value</th>
+							<th className="p-2 border">Stock Unit</th>
 							<th className="p-2 border">Actions</th>
 						</tr>
 					</thead>
 					<tbody>
 						{items.data.map((item) => (
 							<tr key={item.id}>
-								<td className="p-2 border text-blue-600 underline"><button onClick={()=>getItemDetail(route('stations.show', [item.id]))}>{item.name}</button></td>
-								<td className="p-2 border">{item.description}</td>
-								<td className="p-2 border">{item.address}</td>
-								<td className="p-2 border">{item.type}</td>
-								<td className="p-2 border">{item.lat.toString()}</td>
-								<td className="p-2 border">{item.lng.toString()}</td>
+								<td className="p-2 border">{item.sku}</td>
+								<td className="p-2 border">
+									<img
+										src={item.image_url}
+										alt={item.name}
+										className="w-20 max-h-20 mx-auto"
+									/>
+								</td>
+								<td className="p-2 border text-blue-600 underline"><button onClick={()=>getItemDetail(route('materials.show', [item.id]))}>{item.name}</button></td>
+								<td className="p-2 border">{item.brand}</td>
+								<td className="p-2 border">{item.variants}</td>
+								<td className="p-2 border">
+									{item.width}mm &times; {item.height}mm
+                                    &times; {item.depth}mm
+								</td>
+								<td className="p-2 border">
+									<div className='flex flex-col'>
+										<p>Gross: {item.gross_weight} gr</p>
+										<p>Nett: {item.net_weight} gr</p>
+										<p>Tare: {item.tare_weight} gr</p>
+									</div>
+								</td>
+								<td className="p-2 border">
+									{formatIDR(item.base_value)}
+								</td>
+								<td className="p-2 border">{item.stock_unit}</td>
 								<td className="p-2 border">
 									<div className="flex justify-center gap-2">
 										<button onClick={()=>openEditModal(item)}>
 											<FaRegPenToSquare/>
 										</button>
-										<button onClick={()=>deleteStation(route('products.destroy', item.id))}>
+										<button onClick={()=>deleteMaterial(route('materials.destroy', item.id))}>
 											<FaTrash/>
 										</button>
 									</div>
@@ -268,10 +304,12 @@ function StationsList({
 						)}
 					</div>
 				</div>
-				<AddStationModal open={openModal} onClose={()=>setOpenModal(false)} isEdit={isEdit} item={selectedItem} />
+
+				{/* <pre>{JSON.stringify(items, null, 2)}</pre> */}
+				<AddMaterialModal open={openModal} onClose={()=>setOpenModal(false)} isEdit={isEdit} item={selectedItem}/>
 			</div>
 		</AuthenticatedLayout>
 	)
 }
 
-export default StationsList
+export default MaterialsList

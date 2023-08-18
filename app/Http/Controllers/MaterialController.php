@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Material;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class MaterialController extends Controller
 {
@@ -28,6 +29,14 @@ class MaterialController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json($materials);
+        } else {
+            return Inertia::render("Materials/Index", [
+                "items" => $materials,
+                "search" => $request->input("search", ""),
+                "order_by" => $request->input("order_by", "name;asc"),
+                "page" => $request->input("page", 1),
+                "paginate" => $request->input("paginate", 25),
+            ]);
         }
 
         // DOING: Add valid intertia view for material search/list
@@ -72,7 +81,15 @@ class MaterialController extends Controller
      */
     public function show(Material $material)
     {
-        // TODO: material detail inertia view
+        $material->load([
+            "stocks" => ["station"],
+            "transactions" => ["station"]
+        ]);
+
+        return Inertia::render("Materials/Detail", [
+            "item" => $material,
+            "id" => $material->id
+        ]);
     }
 
     /**

@@ -7,6 +7,7 @@ use App\Models\Material;
 use App\Models\MaterialTransaction;
 use App\Models\Station;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class MaterialTransactionController extends Controller
 {
@@ -37,7 +38,7 @@ class MaterialTransactionController extends Controller
                 ->limit(1),
         ]);
 
-        [$sortColumn, $sortDirection] = explode(";", $request->input("order_by", "name;asc"));
+        [$sortColumn, $sortDirection] = explode(";", $request->input("order_by", "material_name;asc"));
         $materialTransactionQuery->orderBy($sortColumn, $sortDirection);
 
         $materialTransactions = $materialTransactionQuery->paginate($request->input("paginate", 25));
@@ -46,14 +47,14 @@ class MaterialTransactionController extends Controller
             return response()->json($materialTransactions);
         }
 
-        // TODO: Add valid intertia view for material transaction search/list
-        // return Inertia::render("Items/Index", [
-        //     "items" => $items,
-        //     "search" => $request->input("search", ""),
-        //     "order_by" => $request->input("order_by", "name;asc"),
-        //     "page" => $request->input("page", 1),
-        //     "paginate" => $request->input("paginate", 25),
-        // ]);
+        // TODO: Add valid intertia view for product transaction search/list
+        return Inertia::render("Materials/Transactions/Index", [
+            "items" => $materialTransactions,
+            "search" => $request->input("search", ""),
+            "order_by" => $request->input("order_by", "material_name;asc"),
+            "page" => $request->input("page", 1),
+            "paginate" => $request->input("paginate", 25),
+        ]);
     }
 
     /**

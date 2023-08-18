@@ -83,6 +83,11 @@ class StationController extends Controller
             "materialTransactions" => ["material"],
         ]);
 
+        return Inertia::render("Stations/Detail", [
+            "item" => $station,
+            "id" => $station->id
+        ]);
+
         // TODO make inertia form view for showing station detail
     }
 

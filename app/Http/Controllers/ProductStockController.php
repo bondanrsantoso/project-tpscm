@@ -92,6 +92,10 @@ class ProductStockController extends Controller
      */
     public function show(ProductStock $productStock)
     {
+        $productStock->load([
+            "product",
+            "station"
+        ]);
         // TODO: product stock detail inertia view
     }
 

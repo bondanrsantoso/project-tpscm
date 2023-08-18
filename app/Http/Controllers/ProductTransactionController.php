@@ -94,6 +94,10 @@ class ProductTransactionController extends Controller
      */
     public function show(ProductTransaction $productTransaction)
     {
+        $productTransaction->load([
+            "product",
+            "station"
+        ]);
         // TODO: product transaction detail inertia view
     }
 
@@ -102,6 +106,10 @@ class ProductTransactionController extends Controller
      */
     public function edit(ProductTransaction $productTransaction)
     {
+        $productTransaction->load([
+            "product",
+            "station"
+        ]);
         // TODO: product transaction edit inertia view (probably the same one as for crete())
     }
 

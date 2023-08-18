@@ -90,6 +90,10 @@ class MaterialTransactionController extends Controller
      */
     public function show(MaterialTransaction $materialTransaction)
     {
+        $materialTransaction->load([
+            "material",
+            "station"
+        ]);
         // TODO: material transaction detail inertia view
     }
 
@@ -98,6 +102,10 @@ class MaterialTransactionController extends Controller
      */
     public function edit(MaterialTransaction $materialTransaction)
     {
+        $materialTransaction->load([
+            "material",
+            "station"
+        ]);
         // TODO: material transaction edit inertia view (probably the same one as for crete())
     }
 

@@ -29,7 +29,7 @@ export default function Authenticated({ user, header, children }) {
 								>
                                     Dashboard
 								</NavLink>
-								<NavDropdown active={route().current('products.index')}>
+								<NavDropdown active={route().current('products.index') || route().current('product_stock.index')}>
 									<Dropdown>
 										<Dropdown.Trigger>
 														Products
@@ -41,6 +41,11 @@ export default function Authenticated({ user, header, children }) {
 												href={route('products.index')}
 											>
 													Products List
+											</Dropdown.Link>
+											<Dropdown.Link
+												href={route('product_stock.index')}
+											>
+													Products Stock List
 											</Dropdown.Link>
 										</Dropdown.Content>
 									</Dropdown>

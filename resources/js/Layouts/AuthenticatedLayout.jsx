@@ -29,7 +29,7 @@ export default function Authenticated({ user, header, children }) {
 								>
                                     Dashboard
 								</NavLink>
-								<NavDropdown active={route().current('products.index') || route().current('product_stock.index')}>
+								<NavDropdown active={route().current('products.index') || route().current('product_stock.index') || route().current('product_transactions.index')}>
 									<Dropdown>
 										<Dropdown.Trigger>
 														Products
@@ -55,7 +55,7 @@ export default function Authenticated({ user, header, children }) {
 										</Dropdown.Content>
 									</Dropdown>
 								</NavDropdown>
-								<NavDropdown active={route().current('materials.index')}>
+								<NavDropdown active={route().current('materials.index') || route().current('material_stock.index') || route().current('material_transactions.index')}>
 									<Dropdown>
 										<Dropdown.Trigger>
 														Materials
@@ -67,6 +67,16 @@ export default function Authenticated({ user, header, children }) {
 												href={route('materials.index')}
 											>
 													Materials List
+											</Dropdown.Link>
+											<Dropdown.Link
+												href={route('material_stock.index')}
+											>
+													Materials Stock List
+											</Dropdown.Link>
+											<Dropdown.Link
+												href={route('material_transactions.index')}
+											>
+													Materials Transactions List
 											</Dropdown.Link>
 										</Dropdown.Content>
 									</Dropdown>

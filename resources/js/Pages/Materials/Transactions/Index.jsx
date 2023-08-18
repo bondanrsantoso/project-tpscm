@@ -17,7 +17,7 @@ function formatIDR(amount) {
 	return formatter.format(amount)
 }
 
-function ProductTransactionsList({
+function MaterialTransactionsList({
 	items,
 	auth,
 	search,
@@ -39,8 +39,8 @@ function ProductTransactionsList({
 	const [openModal, setOpenModal] = useState(false)
 	const [selectedItem, setSelectedItem] =useState()
 	const INITIAL_FORM_DATA = {
-		product_id: null,
-		product_name: null,
+		material_id: null,
+		material_name: null,
 		station_id: null,
 		station_name: null,
 		amount: null,
@@ -48,7 +48,7 @@ function ProductTransactionsList({
 	}
 
 	function refresh() {
-		get(route('product_transactions.index'))
+		get(route('material_transactions.index'))
 	}
 
 	const openEditModal = (item) => {
@@ -82,13 +82,13 @@ function ProductTransactionsList({
 
 	return (
 		<AuthenticatedLayout
-			header={<h2 className="text-lg font-bold">Products</h2>}
+			header={<h2 className="text-lg font-bold">Materials</h2>}
 			user={auth.user}
 		>
-			<Head title="Product Items"></Head>
+			<Head title="Material Items"></Head>
 			<div className="max-w-7xl mx-auto py-10">
 				<div className="flex flex-row justify-between">
-					<h1 className="text-xl font-bold">Products Transactions List</h1>
+					<h1 className="text-xl font-bold">Materials Transactions List</h1>
 					<PrimaryButton className="shrink-0 bg-blue-900 hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-950" onClick={openAddModal}>
 						<FaPlus className="mr-2"/> Add Transaction
 					</PrimaryButton>
@@ -113,8 +113,8 @@ function ProductTransactionsList({
 							setData('order_by', e.target.value)
 						}}
 					>
-						<option value="product_name;asc">Name A-Z</option>
-						<option value="product_name;desc">Name Z-A</option>
+						<option value="material_name;asc">Name A-Z</option>
+						<option value="material_name;desc">Name Z-A</option>
 						<option value="updated_at;desc">Latest</option>
 						<option value="updated_at;asc">Oldest</option>
 						<option value="amount;desc">
@@ -193,7 +193,7 @@ function ProductTransactionsList({
 				<table className="table-auto mt-2 w-full">
 					<thead>
 						<tr>
-							<th className="p-2 border">Product Name</th>
+							<th className="p-2 border">Material Name</th>
 							<th className="p-2 border">Station Name</th>
 							<th className="p-2 border">Type</th>
 							<th className="p-2 border">Amount</th>
@@ -205,7 +205,7 @@ function ProductTransactionsList({
 					<tbody>
 						{items.data.map((item) => (
 							<tr key={item.id}>
-								<td className="p-2 border text-blue-600 underline"><button onClick={()=>getItemDetail(route('products.show', [item.product_id]))}>{item.product_name}</button></td>
+								<td className="p-2 border text-blue-600 underline"><button onClick={()=>getItemDetail(route('materials.show', [item.material_id]))}>{item.material_name}</button></td>
 								<td className="p-2 border text-blue-600 underline"><button onClick={()=>getItemDetail(route('stations.show', [item.station_id]))}>{item.station_name}</button></td>
 								<td className="p-2 border">{item.type}</td>
 								<td className="p-2 border text-end">{item.amount}</td>
@@ -278,4 +278,4 @@ function ProductTransactionsList({
 	)
 }
 
-export default ProductTransactionsList
+export default MaterialTransactionsList

@@ -79,7 +79,7 @@ class StationController extends Controller
         $station->load([
             "products",
             "productTransactions",
-            "material",
+            "materials",
             "materialTransactions",
         ]);
 

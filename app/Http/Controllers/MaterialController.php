@@ -34,6 +34,11 @@ class MaterialController extends Controller
             "page" => $request->input("page", 1),
             "paginate" => $request->input("paginate", 25),
         ]);
+        if ($request->expectsJson()) {
+            return response()->json($materials);
+        }
+
+        // DOING: Add valid intertia view for material search/list
     }
 
     /**

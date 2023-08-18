@@ -78,9 +78,9 @@ class StationController extends Controller
     {
         $station->load([
             "products",
-            "productTransactions",
+            "productTransactions" => ["product"],
             "materials",
-            "materialTransactions",
+            "materialTransactions" => ["material"],
         ]);
 
         // TODO make inertia form view for showing station detail
@@ -91,6 +91,12 @@ class StationController extends Controller
      */
     public function edit(Station $station)
     {
+        $station->load([
+            "products",
+            "productTransactions" => ["product"],
+            "materials",
+            "materialTransactions" => ["material"],
+        ]);
         // DONE make inertia form view for creating and/or updating station data
     }
 

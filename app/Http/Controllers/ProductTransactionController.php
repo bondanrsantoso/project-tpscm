@@ -8,6 +8,7 @@ use App\Models\ProductTransaction;
 use App\Models\Station;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ProductTransactionController extends Controller
 {
@@ -41,7 +42,7 @@ class ProductTransactionController extends Controller
                 ->limit(1),
         ]);
 
-        [$sortColumn, $sortDirection] = explode(";", $request->input("order_by", "name;asc"));
+        [$sortColumn, $sortDirection] = explode(";", $request->input("order_by", "product_name;asc"));
         $productTransactionQuery->orderBy($sortColumn, $sortDirection);
 
         $productTransactions = $productTransactionQuery->paginate($request->input("paginate", 25));
@@ -51,13 +52,13 @@ class ProductTransactionController extends Controller
         }
 
         // TODO: Add valid intertia view for product transaction search/list
-        // return Inertia::render("Items/Index", [
-        //     "items" => $items,
-        //     "search" => $request->input("search", ""),
-        //     "order_by" => $request->input("order_by", "name;asc"),
-        //     "page" => $request->input("page", 1),
-        //     "paginate" => $request->input("paginate", 25),
-        // ]);
+        return Inertia::render("Products/Transactions/Index", [
+            "items" => $productTransactions,
+            "search" => $request->input("search", ""),
+            "order_by" => $request->input("order_by", "product_name;asc"),
+            "page" => $request->input("page", 1),
+            "paginate" => $request->input("paginate", 25),
+        ]);
     }
 
     /**

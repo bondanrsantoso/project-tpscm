@@ -47,6 +47,11 @@ export default function Authenticated({ user, header, children }) {
 											>
 													Products Stock List
 											</Dropdown.Link>
+											<Dropdown.Link
+												href={route('product_transactions.index')}
+											>
+													Products Transactions List
+											</Dropdown.Link>
 										</Dropdown.Content>
 									</Dropdown>
 								</NavDropdown>

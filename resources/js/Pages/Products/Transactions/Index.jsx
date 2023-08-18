@@ -5,8 +5,9 @@ import TextInput from '@/Components/TextInput'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import { Head, useForm } from '@inertiajs/react'
 import { useEffect, useState } from 'react'
-import { FaPlus, FaRegPenToSquare, FaTrash } from 'react-icons/fa6'
-import AddStockModal from '../Components/AddTransactionModal'
+import { FaPlus, FaRegPenToSquare } from 'react-icons/fa6'
+import AddTransactionModal from '../Components/AddTransactionModal'
+
 
 function formatIDR(amount) {
 	const formatter = new Intl.NumberFormat('id', {
@@ -16,7 +17,7 @@ function formatIDR(amount) {
 	return formatter.format(amount)
 }
 
-function ProductStocksList({
+function ProductTransactionsList({
 	items,
 	auth,
 	search,
@@ -42,11 +43,12 @@ function ProductStocksList({
 		product_name: null,
 		station_id: null,
 		station_name: null,
-		amount: null
+		amount: null,
+		is_correction: 0
 	}
 
 	function refresh() {
-		get(route('product_stock.index'))
+		get(route('product_transactions.index'))
 	}
 
 	const openEditModal = (item) => {
@@ -86,7 +88,10 @@ function ProductStocksList({
 			<Head title="Product Items"></Head>
 			<div className="max-w-7xl mx-auto py-10">
 				<div className="flex flex-row justify-between">
-					<h1 className="text-xl font-bold">Products Stock List</h1>
+					<h1 className="text-xl font-bold">Products Transactions List</h1>
+					<PrimaryButton className="shrink-0 bg-blue-900 hover:bg-blue-800 focus:bg-blue-800 active:bg-blue-950" onClick={openAddModal}>
+						<FaPlus className="mr-2"/> Add Product
+					</PrimaryButton>
 				</div>
 				<form
 					className="mt-4 flex justify-end items-center gap-2"
@@ -190,8 +195,10 @@ function ProductStocksList({
 						<tr>
 							<th className="p-2 border">Product Name</th>
 							<th className="p-2 border">Station Name</th>
+							<th className="p-2 border">Type</th>
 							<th className="p-2 border">Amount</th>
 							<th className="p-2 border">Unit</th>
+							<th className="p-2 border">Actions</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -199,8 +206,14 @@ function ProductStocksList({
 							<tr key={item.id}>
 								<td className="p-2 border text-blue-600 underline"><button onClick={()=>getItemDetail(route('products.show', [item.product_id]))}>{item.product_name}</button></td>
 								<td className="p-2 border text-blue-600 underline"><button onClick={()=>getItemDetail(route('stations.show', [item.station_id]))}>{item.station_name}</button></td>
+								<td className="p-2 border">{item.type}</td>
 								<td className="p-2 border text-end">{item.amount}</td>
 								<td className="p-2 border">{item.unit}</td>
+								<td className="p-2 border">
+									<button onClick={()=>openEditModal(item)}>
+										<FaRegPenToSquare/>
+									</button>
+								</td>
 							</tr>
 						))}
 					</tbody>
@@ -257,9 +270,10 @@ function ProductStocksList({
 				</div>
 
 				{/* <pre>{JSON.stringify(items, null, 2)}</pre> */}
+				<AddTransactionModal open={openModal} onClose={()=>setOpenModal(false)} isEdit={isEdit} item={selectedItem}/>
 			</div>
 		</AuthenticatedLayout>
 	)
 }
 
-export default ProductStocksList
+export default ProductTransactionsList

@@ -27,15 +27,16 @@ class MaterialController extends Controller
 
         $materials = $materialQuery->paginate($request->input("paginate", 25));
 
-        return Inertia::render("Materials/Index", [
-            "items" => $materials,
-            "search" => $request->input("search", ""),
-            "order_by" => $request->input("order_by", "name;asc"),
-            "page" => $request->input("page", 1),
-            "paginate" => $request->input("paginate", 25),
-        ]);
         if ($request->expectsJson()) {
             return response()->json($materials);
+        } else {
+            return Inertia::render("Materials/Index", [
+                "items" => $materials,
+                "search" => $request->input("search", ""),
+                "order_by" => $request->input("order_by", "name;asc"),
+                "page" => $request->input("page", 1),
+                "paginate" => $request->input("paginate", 25),
+            ]);
         }
 
         // DOING: Add valid intertia view for material search/list
